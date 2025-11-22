@@ -3,7 +3,7 @@
 	public interface ICard
 	{
 		public int Id { get; }
-		public string ImagePath { get; protected set; }
-		public string Name { get; protected set; } // ??
+		public string ImagePath { get; set; }
+		public string Name { get; set; }
 	}
 }

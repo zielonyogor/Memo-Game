@@ -13,6 +13,56 @@ namespace NR155910155992.MemoGame.Dao
 			return _db.Cards.ToList(); 
 		}
 
+		public IEnumerable<IGameSession> GetAllGameSessions()
+		{
+			return _db.GameSessions.ToList();
+		}
+
+		public IEnumerable<IUserProfile> GetAllUserProfiles()
+		{
+			return _db.UserProfiles.ToList();
+		}
+
+		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile)
+		{
+			return _db.GameSessions
+				.Where(gs => gs.PlayerResults
+				.Any(pr => pr.UserProfileId == userProfile.Id))
+				.ToList();
+		}
+
+		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession)
+		{
+			return _db.PlayerGameResults
+				.Where(pgr => pgr.GameSessionId == gameSession.Id)
+				.ToList();
+		}
+
+		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode)
+		{
+			var gameSession = new GameSession
+			{
+				GameDate = date,
+				Duration = duration,
+				GameType = gameType,
+				GameMode = gameMode
+			};
+
+			_db.GameSessions.Add(gameSession);
+			_db.SaveChanges();
+
+			return gameSession;
+		}
+
+		public IUserProfile CreateNewUserProfile(string userName)
+		{
+			var userProfile = new UserProfile { UserName = userName };
+			_db.UserProfiles.Add(userProfile);
+			_db.SaveChanges();
+
+			return userProfile;
+		}
+
 		public ICard CreateNewCard(string imagePath, string name)
 		{
 			var card = new Card { Name = name, ImagePath = imagePath };
@@ -20,46 +70,6 @@ namespace NR155910155992.MemoGame.Dao
 			_db.SaveChanges();
 
 			return card;
-		}
-
-		public IEnumerable<IGameStatistics> GetAllGameStatistics()
-		{
-			throw new NotImplementedException();
-		}
-
-		public IEnumerable<IUserProfile> GetAllUserProfiles()
-		{
-			throw new NotImplementedException();
-		}
-
-		IEnumerable<ICard> IDataAccessObject.GetAllCards()
-		{
-			throw new NotImplementedException();
-		}
-
-		IEnumerable<IGameStatistics> IDataAccessObject.GetAllGameStatistics()
-		{
-			throw new NotImplementedException();
-		}
-
-		IEnumerable<IUserProfile> IDataAccessObject.GetAllUserProfiles()
-		{
-			throw new NotImplementedException();
-		}
-
-		IGameStatistics IDataAccessObject.CreateGameStatistics(DateTime date, TimeSpan duration, int cardsUncovered, GameType gameType)
-		{
-			throw new NotImplementedException();
-		}
-
-		ICard IDataAccessObject.CreateNewCard(string imagePath, string name)
-		{
-			throw new NotImplementedException();
-		}
-
-		IUserProfile IDataAccessObject.CreateNewUserProfile(string userName)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
