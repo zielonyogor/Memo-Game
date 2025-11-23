@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace UI
+namespace NR155910155992.MemoGame.UI
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
