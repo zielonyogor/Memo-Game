@@ -1,18 +1,21 @@
-﻿using System.Windows.Input;
+﻿using NR155910155992.MemoGame.Interfaces;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
 	public class MainViewModel : ViewModelBase
 	{
+		private readonly IGameManager _gameManager;
+
 		private ViewModelBase _currentView;
 		public ViewModelBase CurrentView {
 			get => _currentView;
 			set { _currentView = value; OnPropertyChanged(); }
 		}
 
-		public MainViewModel()
+		public MainViewModel(IGameManager gameManager)
 		{
-			ShowMenu();
+			_gameManager = gameManager;
+			_currentView = new MenuViewModel(StartGame);
 		}
 
 		private void ShowMenu()
@@ -22,7 +25,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void StartGame()
 		{
-			CurrentView = new GameViewModel(ShowMenu);
+			CurrentView = new GameViewModel(_gameManager, ShowMenu);
 		}
 	}
 }

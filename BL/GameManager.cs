@@ -1,25 +1,24 @@
-﻿using NR155910155992.MemoGame.Interfaces;
-using System.Collections.Generic;
+﻿using NR155910155992.MemoGame.Core;
+using NR155910155992.MemoGame.Interfaces;
+using System.Reflection;
 
 namespace NR155910155992.MemoGame.BL
 {
 	public class GameManager : IGameManager
 	{
-		public IDataAccessObject dao;
+		public IDataAccessObject _dao;
 
 		public GameManager()
 		{
-			
+			_dao = LibraryLoader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 		}
 
 		public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards)
 		{
-			var cards = dao.GetAllCards();
+			var cards = _dao.GetAllCards();
 
-			//not sure if it works, didnt test
 			Random rnd = new Random();
-			IEnumerable<ICard> randomCards = cards.OrderBy(c => rnd.Next())
-					   .Take(numberOfCards);
+			IEnumerable<ICard> randomCards = cards.OrderBy(c => rnd.Next()).Take(numberOfCards);
 			return randomCards;
 		}
 

@@ -4,8 +4,13 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace> NR155910155992.MemoGame.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <PackageId> NR155910155992.MemoGame.$(AssemblyName)</PackageId>
+    <RootNamespace>NR155910155992.MemoGame.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	<AssemblyName>NR155910155992.MemoGame.$(MSBuildProjectName)</AssemblyName>
+	<PackageId>$(AssemblyName)</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.0" />
+  </ItemGroup>
 
 </Project>
