@@ -19,6 +19,10 @@
             <Button Content="Start game" 
                     Style="{StaticResource TabButton}"
                     Command="{Binding StartGameCommand}"/>
+            <TextBlock Text="{Binding UserText}" />
+            <Button Content="Change User" 
+                    Style="{StaticResource TabButton}"
+                    Command="{Binding ChangeCurrentUser}"/>
         </StackPanel>
     </Grid>
 </UserControl>

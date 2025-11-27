@@ -71,5 +71,19 @@ namespace NR155910155992.MemoGame.Dao
 
 			return card;
 		}
-	}
+
+        public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner)
+		{
+			var playerGameResult = new PlayerGameResult
+			{
+				CardsUncovered = cardsUncovered,
+				IsWinner = isWinner,
+				GameSession = gameSession as GameSession ?? throw new ArgumentException("gameSession must be of type GameSession", nameof(gameSession)),
+				User = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile))
+			};
+			_db.PlayerGameResults.Add(playerGameResult);
+
+			return playerGameResult;
+		}
+    }
 }

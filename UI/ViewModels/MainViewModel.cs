@@ -22,7 +22,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void StartGame()
 		{
-			CurrentView = new GameViewModel();
+			CurrentView = new GameViewModel(ShowMenu);
 		}
 	}
 }

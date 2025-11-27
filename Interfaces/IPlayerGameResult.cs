@@ -3,10 +3,10 @@
 	public interface IPlayerGameResult
 	{
 		int Id { get; }
-		int CardsUncovered { get; }
-		bool IsWinner { get; }
+		public int CardsUncovered { get; set; }
+		public bool IsWinner { get; set; }
 
-		IUserProfile User { get; }
-		IGameSession GameSession { get; }
+		public IUserProfile User { get; set; }
+		public IGameSession GameSession { get; set; }
 	}
 }

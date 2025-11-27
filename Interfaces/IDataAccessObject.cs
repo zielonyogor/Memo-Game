@@ -14,6 +14,6 @@ namespace NR155910155992.MemoGame.Interfaces
 		public ICard CreateNewCard(string imagePath, string name);
 		public IUserProfile CreateNewUserProfile(string userName);
 		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode);
-
+		public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner);
 	}
 }
