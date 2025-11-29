@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Dao\Dao.csproj" />
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+	<ProjectReference Include="..\JsonDao\JsonDao.csproj" />
   </ItemGroup>
 
 </Project>

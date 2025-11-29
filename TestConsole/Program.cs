@@ -8,6 +8,7 @@ internal class Program
 		var daoObject = LibraryLoader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 
 		var cards = daoObject.GetAllCards();
+		Console.WriteLine("Result " + cards.Count());
 		foreach (var item in cards)
 		{
 			Console.WriteLine($"test: {item.Id}, {item.Name}, {item.ImagePath}");

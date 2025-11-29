@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<RootNamespace> NR155910155992.MemoGame.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	<AssemblyName>NR155910155992.MemoGame.$(MSBuildProjectName)</AssemblyName>
+	<PackageId> $(AssemblyName)</PackageId>
+  </PropertyGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+	</ItemGroup>
+
+</Project>
