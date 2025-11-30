@@ -1,6 +1,8 @@
 ﻿using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.ViewModels;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using System.Windows;
 
 namespace NR155910155992.MemoGame.UI
@@ -16,7 +18,17 @@ namespace NR155910155992.MemoGame.UI
 			base.OnStartup(e);
 
 			// Load business logic
-			IGameManager gameManager = LibraryLoader.LoadObjectFromLibrary<IGameManager>(LibraryKey.Bl);
+			var builder = new ConfigurationBuilder()
+					.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+					.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+			IConfiguration config = builder.Build();
+
+			var libraryLoader = new LibraryLoader(config);
+
+			IGameManager gameManager = libraryLoader.LoadObjectFromLibrary<IGameManager>(
+				LibraryKey.Bl,
+				new object[] { config }
+			);
 
 			var mainViewModel = new MainViewModel(gameManager);
 			MainWindow mainWindow = new MainWindow();

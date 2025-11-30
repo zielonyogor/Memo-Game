@@ -5,6 +5,7 @@ internal class Program
 {
 	private static void Main(string[] args)
 	{
+		// not working right now
 		var daoObject = LibraryLoader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 
 		var cards = daoObject.GetAllCards();

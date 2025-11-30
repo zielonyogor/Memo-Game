@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<RootNamespace>NR155910155992.MemoGame.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	<AssemblyName>NR155910155992.MemoGame.$(MSBuildProjectName)</AssemblyName>
+	<PackageId> $(AssemblyName)</PackageId>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="
+		  xcopy /Y /S &quot;$(SolutionDir)BL\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;
+		  xcopy /Y /S &quot;$(SolutionDir)Dao\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;
+		  xcopy /Y /S &quot;$(SolutionDir)JsonDao\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;
+		" />
+	</Target>
+
+</Project>

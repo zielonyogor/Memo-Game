@@ -1,0 +1,50 @@
+﻿@namespace NR155910155992.MemoGame.WebUI.Views.Game
+@using NR155910155992.MemoGame.WebUI.Models
+
+@model IEnumerable<CardViewModel>
+@{
+	ViewData["Title"] = "Game";
+}
+
+<h1>Play</h1>
+
+<div class="game-board">
+    @foreach (var card in Model)
+    {
+        <div class="card" data-id="@card.Id">
+            <img src="/images/card_back.png" class="card-back" onclick="flipCard(this)" />
+
+            <img src="@card.ImagePath" class="card-front" style="display:none;" />
+        </div>
+    }
+</div>
+
+<style>
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Siatka 4x4 */
+        gap: 10px;
+        max-width: 600px;
+    }
+
+    .card img {
+        width: 100%;
+        height: auto;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
+<script>
+    // Prosta logika JS do odwracania (tylko wizualna)
+    function flipCard(element) {
+        // To tylko demo - w prawdziwej grze musisz wysłać AJAX do serwera
+        var parent = element.parentElement;
+        var back = parent.querySelector('.card-back');
+        var front = parent.querySelector('.card-front');
+
+        back.style.display = 'none';
+        front.style.display = 'block';
+    }
+</script>

@@ -25,9 +25,9 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		}
 
 		public int Id => _card.Id;
-		public string ImageSource => _card.ImagePath;
+		public string ImageSource => ResolvePath(_card.ImagePath);
 
-		public string? CurrentSideImage => IsRevealed || IsMatched ? ImageSource : null;
+		public string? CurrentSideImage => IsRevealed || IsMatched ? ImageSource : ImageSource;
 
 		public ICommand ClickCommand { get; }
 
@@ -45,6 +45,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		private void OnClick()
 		{
 			_onClickAction?.Invoke(this);
+		}
+
+		private string ResolvePath(string path)
+		{
+			if (System.IO.Path.IsPathRooted(path))
+				return path;
+
+			return System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
 		}
 	}
 }

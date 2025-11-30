@@ -17,11 +17,11 @@
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Center"/>
             <Button Content="Start game" 
-                    Style="{StaticResource TabButton}"
+                    Style="{StaticResource PrimaryButton}"
                     Command="{Binding StartGameCommand}"/>
             <TextBlock Text="{Binding UserText}" />
             <Button Content="Change User" 
-                    Style="{StaticResource TabButton}"
+                    Style="{StaticResource PrimaryButton}"
                     Command="{Binding ChangeCurrentUser}"/>
         </StackPanel>
     </Grid>

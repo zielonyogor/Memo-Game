@@ -1,39 +1,47 @@
 ﻿using System.Reflection;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace NR155910155992.MemoGame.Core
 {
 	public class LibraryLoader
 	{
-		public static T LoadObjectFromLibrary<T>(LibraryKey libraryKey)
+		private readonly IConfiguration _configuration;
+
+		public LibraryLoader(IConfiguration configuration)
+		{
+			_configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+		}
+
+		public T LoadObjectFromLibrary<T>(LibraryKey libraryKey, object[]? constructorArgs = null)
 		{
 			string key = GetKeyFromLibraryEnum(libraryKey);
-			// Load config of the entry assembly (UI project)
-			var config = ConfigurationManager.OpenExeConfiguration(
-				ConfigurationUserLevel.None
-			);
 
-			var dllName = config.AppSettings.Settings[key]?.Value;
+			var dllName = _configuration[$"LibrarySettings:{key}"];
 
 			if (string.IsNullOrWhiteSpace(dllName))
-				throw new Exception($"Nie skonfigurowano '{key}' w App.config!");
+				throw new Exception($"Nie skonfigurowano '{key}' w appsettings.json (LibrarySettings:{key})!");
 
-			if (!File.Exists(dllName))
-				throw new FileNotFoundException($"Nie znaleziono biblioteki {key}: {dllName}");
+			string basePath = AppDomain.CurrentDomain.BaseDirectory;
+			string fullPath = Path.Combine(basePath, dllName);
 
-			var assembly = Assembly.LoadFrom(dllName);
-			
-			var daoType = assembly
+			if (!File.Exists(fullPath))
+			{
+				throw new FileNotFoundException($"Nie znaleziono biblioteki {key}. \nSzukano w: {fullPath}", fullPath);
+			}
+
+			var assembly = Assembly.LoadFrom(fullPath);
+
+			var implementationType = assembly
 				.GetTypes()
 				.FirstOrDefault(t =>
 					typeof(T).IsAssignableFrom(t) &&
 					!t.IsInterface &&
 					!t.IsAbstract);
 
-			if (daoType == null)
+			if (implementationType == null)
 				throw new Exception($"Nie znaleziono implementacji {typeof(T).Name} w {dllName}");
 
-			return (T)Activator.CreateInstance(daoType);
+			return (T)Activator.CreateInstance(implementationType, constructorArgs);
 		}
 
 		private static string GetKeyFromLibraryEnum(LibraryKey libraryKey)

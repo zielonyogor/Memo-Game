@@ -20,7 +20,7 @@ namespace NR155910155992.MemoGame.JsonDao
 		public JsonDAO()
 		{
 			_folder = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGameJson");
+				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGame");
 
 			Directory.CreateDirectory(_folder);
 
@@ -134,10 +134,10 @@ namespace NR155910155992.MemoGame.JsonDao
 
 			_cards = new List<Card>
 			{
-				new Card { Id = 1, Name = "Card Flower", ImagePath = "images/card1.png" },
-				new Card { Id = 2, Name = "Card House", ImagePath = "images/card2.png" },
-				new Card { Id = 3, Name = "Card Cloud", ImagePath = "images/card3.png" },
-				new Card { Id = 4, Name = "Card Bee", ImagePath = "images/card4.png" }
+				new Card { Id = 1, Name = "Card Flower", ImagePath = "Assets/Cards/card1.png" },
+				new Card { Id = 2, Name = "Card House", ImagePath = "Assets/Cards/card2.png" },
+				new Card { Id = 3, Name = "Card Cloud", ImagePath = "Assets/Cards/card3.png" },
+				new Card { Id = 4, Name = "Card Bee", ImagePath = "Assets/Cards/card4.png" }
 			};
 			_userProfiles = new List<UserProfile>
 			{
