@@ -137,8 +137,9 @@ namespace NR155910155992.MemoGame.JsonDao
 				new Card { Id = 1, Name = "Card Flower", ImagePath = "Assets/Cards/card1.png" },
 				new Card { Id = 2, Name = "Card House", ImagePath = "Assets/Cards/card2.png" },
 				new Card { Id = 3, Name = "Card Cloud", ImagePath = "Assets/Cards/card3.png" },
-				new Card { Id = 4, Name = "Card Bee", ImagePath = "Assets/Cards/card4.png" }
-			};
+				new Card { Id = 4, Name = "Card Bee", ImagePath = "Assets/Cards/card4.png" },
+				new Card { Id = 5, Name = "Card Sun", ImagePath = "Assets/Cards/card5.png" }
+            };
 			_userProfiles = new List<UserProfile>
 			{
 				new UserProfile { Id = 1, UserName = "PlayerX" },

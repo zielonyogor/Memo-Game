@@ -10,12 +10,10 @@
              d:DesignHeight="200" d:DesignWidth="200">
     <Border BorderBrush="Black" BorderThickness="4" Margin="2" CornerRadius="5" Background="White">
         <Grid>
-            <Image Source="{Binding CurrentSideImage}" Stretch="UniformToFill" Margin="5"/>
-
             <Button Command="{Binding ClickCommand}"
-                    Content="{Binding CurrentSideImage}"
-                    Opacity="0" 
-                    IsEnabled="{Binding IsMatched, Converter={StaticResource InverseBoolConverter}}"/>
+                    IsEnabled="{Binding IsMatched, Converter={StaticResource InverseBoolConverter}}">
+                <Image Source="{Binding CurrentSideImage}" Stretch="UniformToFill" Margin="5"/>
+            </Button>
         </Grid>
     </Border>
 </UserControl>

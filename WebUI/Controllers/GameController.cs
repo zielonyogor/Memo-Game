@@ -17,6 +17,7 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		// GET: GameController
 		public ActionResult Index()
 		{
+			//propably will have to be changed to GetRandomCardsPositionedOnBoard
 			var rawCards = _gameManager.GetRandomSetOfCards(8);
 
 			var deck = new List<CardViewModel>();

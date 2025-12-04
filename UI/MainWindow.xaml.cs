@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using NR155910155992.MemoGame.UI.ViewModels;
+using System.Windows;
 
 namespace NR155910155992.MemoGame.UI
 {
@@ -7,9 +8,10 @@ namespace NR155910155992.MemoGame.UI
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		public MainWindow()
+		public MainWindow(MainViewModel mainViewModel)
 		{
-			InitializeComponent();
+			DataContext = mainViewModel;
+            InitializeComponent();
 		}
 	}
 }

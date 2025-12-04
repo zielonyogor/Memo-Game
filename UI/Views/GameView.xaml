@@ -17,13 +17,12 @@
                 HorizontalAlignment="Left" Margin="5"
                 Command="{Binding BackToMenu}"/>
         <Grid Grid.Row="1">
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding Cards}" Margin="20">
+            <ItemsControl ItemsSource="{Binding Cards}" Margin="20">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Rows="4" Columns="4"/>
+                        <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:CardView />

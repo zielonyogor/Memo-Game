@@ -23,9 +23,35 @@ namespace NR155910155992.MemoGame.BL
 			return randomCards;
 		}
 
-		public ICard[,] GetRandomCardsPositionsOnBoard(IEnumerable<ICard> cards)
+		//retrurns a board fileed with shuffled cards
+		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int cols)
 		{
-			return new ICard[4, 4];
+			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
+            var cardSet = GetRandomSetOfCards(uniqueCardsNeeded);
+            
+			var duplicatedCards = cardSet.Concat(cardSet).ToList();
+            
+			Random rnd = new Random();
+			var shuffledCards = duplicatedCards.OrderBy(c => rnd.Next()).ToList();
+			
+			var board = new ICard[rows, cols];
+			int index = 0;
+			for (int r = 0; r < rows; r++)
+			{
+				for (int c = 0; c < cols; c++)
+				{
+					if (index < shuffledCards.Count)
+					{
+						board[r, c] = shuffledCards[index];
+						index++;
+					}
+					else
+					{
+						board[r, c] = null; // In case of odd number of cells, leave last cell empty
+					}
+				}
+			}
+			return board;
 		}
 	}
 }

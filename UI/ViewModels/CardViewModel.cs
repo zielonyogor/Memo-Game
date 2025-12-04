@@ -14,20 +14,20 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public bool IsRevealed
 		{
 			get => _isRevealed;
-			set { _isRevealed = value; OnPropertyChanged(); }
+			set { _isRevealed = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentSideImage)); }
 		}
 
 		private bool _isMatched;
 		public bool IsMatched
 		{
 			get => _isMatched;
-			set { _isMatched = value; OnPropertyChanged(); }
+			set { _isMatched = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentSideImage)); }
 		}
 
 		public int Id => _card.Id;
 		public string ImageSource => ResolvePath(_card.ImagePath);
-
-		public string? CurrentSideImage => IsRevealed || IsMatched ? ImageSource : ImageSource;
+		public string BackSideImage => ResolvePath("Assets/Cards/card_backside.png");
+        public string? CurrentSideImage => IsRevealed || IsMatched ? ImageSource : BackSideImage;
 
 		public ICommand ClickCommand { get; }
 

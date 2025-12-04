@@ -15,7 +15,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public MainViewModel(IGameManager gameManager)
 		{
 			_gameManager = gameManager;
-			_currentView = new MenuViewModel(StartGame);
+            _currentView = new MenuViewModel(StartGame);
 		}
 
 		private void ShowMenu()

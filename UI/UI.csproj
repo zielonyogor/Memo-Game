@@ -16,6 +16,7 @@
     <None Remove="Assets\Cards\card1.png" />
     <None Remove="Assets\Cards\card2.png" />
     <None Remove="Assets\Cards\card3.png" />
+    <None Remove="Assets\Cards\card_backside.png" />
     <None Remove="Assets\Cards\missing_image.png" />
   </ItemGroup>
 
@@ -37,6 +38,12 @@
     <Content Include="Assets\Cards\card2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Cards\card5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\card4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Cards\card3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -47,6 +54,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Cards\card_backside.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

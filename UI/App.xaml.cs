@@ -1,8 +1,10 @@
-﻿using NR155910155992.MemoGame.Core;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.DependencyInjection;
+using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.ViewModels;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
+using System;
 using System.Windows;
 
 namespace NR155910155992.MemoGame.UI
@@ -12,8 +14,8 @@ namespace NR155910155992.MemoGame.UI
 	/// </summary>
 	public partial class App : Application
 	{
-
-		protected override void OnStartup(StartupEventArgs e)
+		private IServiceProvider _serviceProvider;
+        protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
@@ -30,11 +32,21 @@ namespace NR155910155992.MemoGame.UI
 				new object[] { config }
 			);
 
-			var mainViewModel = new MainViewModel(gameManager);
-			MainWindow mainWindow = new MainWindow();
-			mainWindow.DataContext = mainViewModel;
+			var services = new ServiceCollection();
+			services.AddSingleton<MainWindow>();
+			services.AddSingleton<MainViewModel>();
+			services.AddSingleton<IGameManager>(gameManager);
+
+            _serviceProvider = services.BuildServiceProvider();
+
+            //var mainViewModel = new MainViewModel(gameManager);
+			//MainWindow mainWindow = new MainWindow();
+			MainWindow mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+
+            //mainWindow.DataContext = mainViewModel;
 			mainWindow.Show();
 		}
+
 	}
 
 }
