@@ -37,41 +37,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 					ICard card = cards[r,c];
                     if ( card != null)
 					{
-						var cardViewModel = new CardViewModel(card, OnCardClicked);
+						var cardViewModel = new CardViewModel(card, _gameManager);
 						Cards.Add(cardViewModel);
 
 					}
 				}
-			}
-		}
-
-		private async void OnCardClicked(CardViewModel clickedCard)
-		{
-			if (clickedCard.IsRevealed || clickedCard.IsMatched || _isShowingCards)
-				return;
-			clickedCard.IsRevealed = true;
-			Debug.WriteLine($"Card clicked: {clickedCard.Id}");
-            if (_firstRevealedCard == null)
-			{
-				_firstRevealedCard = clickedCard;
-			}
-			else
-			{
-				if (_firstRevealedCard.Id == clickedCard.Id)
-				{
-					_firstRevealedCard.IsMatched = true;
-					clickedCard.IsMatched = true;
-					Debug.WriteLine($"Matched cards: {clickedCard.Id}");
-				}
-				else
-				{
-					_isShowingCards = true;
-					await Task.Delay(1000);
-					_firstRevealedCard.IsRevealed = false;
-					clickedCard.IsRevealed = false;
-					_isShowingCards = false;
-				}
-				_firstRevealedCard = null;
 			}
 		}
 	}

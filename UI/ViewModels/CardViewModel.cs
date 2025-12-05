@@ -8,7 +8,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
     public class CardViewModel : ViewModelBase
     {
 		private readonly ICard _card;
-		private readonly Action<CardViewModel> _onClickAction;
+		private readonly IGameManager _gameManager;
 
 		private bool _isRevealed;
 		public bool IsRevealed
@@ -31,21 +31,42 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ICommand ClickCommand { get; }
 
-		public CardViewModel(ICard card, Action<CardViewModel> onClickAction)
+		public CardViewModel(ICard card, IGameManager gameManager)
 		{
 			_card = card;
 			Debug.WriteLine($"Got card: {card.ImagePath} {card.Id}");
 			_isRevealed = false;
 			_isMatched = false;
 
-			_onClickAction = onClickAction;
 			ClickCommand = new RelayCommand((_) => OnClick());
-		}
+
+			_gameManager = gameManager;
+
+			_gameManager.CardsMatched += (s, matchedCardId) =>
+			{
+				if (matchedCardId == Id)
+				{
+					IsMatched = true;
+				}
+			};
+			_gameManager.CardsMismatched += (s, e) =>
+			{
+				if (!IsMatched)
+				{
+					IsRevealed = false;
+				}
+			};
+
+        }
 
 		private void OnClick()
 		{
-			_onClickAction?.Invoke(this);
+            if (IsRevealed || IsMatched || _gameManager.IsShowingChoosenCards)
+				return;
+            IsRevealed = true;
+            _gameManager.OnCardClicked(Id);
 		}
+
 
 		private string ResolvePath(string path)
 		{
