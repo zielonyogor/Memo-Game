@@ -8,7 +8,7 @@
 
 		public Task OnCardClicked(int clickedCardId);
         public event EventHandler<int> CardsMatched;
-		public event EventHandler CardsMismatched; 
-
+		public event EventHandler CardsMismatched;
+        public event EventHandler GameFinished;
     }
 }

@@ -10,12 +10,16 @@ namespace NR155910155992.MemoGame.BL
 	{
 		public IDataAccessObject _dao;
 		private int? _firstRevealedCardId = null;
+		private bool _showingCards = false;
+        public bool IsShowingChoosenCards => _showingCards;
 
         public event EventHandler<int> CardsMatched;
         public event EventHandler CardsMismatched;
+		public event EventHandler GameFinished;
 
-		private bool _showingCards = false;
-		public bool IsShowingChoosenCards => _showingCards;
+        private int _matchedPairsCount = 0;
+		private int _totalPairs;
+
 
         public GameManager(IConfiguration configuration)
 		{
@@ -28,7 +32,8 @@ namespace NR155910155992.MemoGame.BL
 			var cards = _dao.GetAllCards();
 
 			Random rnd = new Random();
-			IEnumerable<ICard> randomCards = cards.OrderBy(c => rnd.Next()).Take(numberOfCards);
+            var randomCards = cards.OrderBy(c => rnd.Next())
+                                   .Take(numberOfCards); 
 			return randomCards;
 		}
 
@@ -36,11 +41,13 @@ namespace NR155910155992.MemoGame.BL
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int cols)
 		{
 			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
-			var cardSet = GetRandomSetOfCards(uniqueCardsNeeded);
+			_totalPairs = uniqueCardsNeeded;
+
+            var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();
 
 			var duplicatedCards = cardSet.Concat(cardSet).ToList();
 
-			Random rnd = new Random();
+            Random rnd = new Random();
 			var shuffledCards = duplicatedCards.OrderBy(c => rnd.Next()).ToList();
 
 			var board = new ICard[rows, cols];
@@ -77,7 +84,15 @@ namespace NR155910155992.MemoGame.BL
 				if (_firstRevealedCardId == clickedCardId)
 				{
 					CardsMatched?.Invoke(this, clickedCardId);
+					_matchedPairsCount++;
+					if (_matchedPairsCount >= _totalPairs)
+                    {
+						GameFinished?.Invoke(this, EventArgs.Empty);
+                    }
                     Debug.WriteLine($"Matched cards: {clickedCardId}");
+
+				
+
 				}
 				else
 				{
@@ -89,8 +104,6 @@ namespace NR155910155992.MemoGame.BL
                 }
 				_firstRevealedCardId = null;
 			}
-
-			
 		}
 	}
 }

@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="NR155910155992.MemoGame.UI.Views.GameFinishedView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NR155910155992.MemoGame.UI.Views" 
+             xmlns:vm="clr-namespace:NR155910155992.MemoGame.UI.ViewModels" 
+             d:DataContext="{d:DesignInstance Type=vm:GameFinishedViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Border Padding="30"
+            Background="White"
+            CornerRadius="10"
+            Width="350"
+            Height="250"
+            BorderBrush="Black"
+            BorderThickness="3">
+        <StackPanel HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+            <TextBlock Text="You Win!"
+                       FontSize="32"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+
+            <Button Content="Back to Menu"
+                    Command="{Binding BackToMenu}"
+                    Width="150"
+                    Height="40"
+                    Margin="10"/>
+            </StackPanel>
+
+    </Border>
+</UserControl>

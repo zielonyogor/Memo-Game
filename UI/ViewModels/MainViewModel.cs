@@ -1,4 +1,5 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
@@ -20,7 +21,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void ShowMenu()
 		{
-			CurrentView = new MenuViewModel(StartGame);
+			Debug.WriteLine("Returning to menu...");
+            CurrentView = new MenuViewModel(StartGame);
 		}
 
 		private void StartGame()

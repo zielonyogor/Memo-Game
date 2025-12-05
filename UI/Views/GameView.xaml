@@ -33,6 +33,9 @@
                     <Style BasedOn="{StaticResource CardContainer}" TargetType="ContentPresenter"/>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
+
+            <local:GameFinishedView Visibility ="{Binding FinishedOverlayVisibility}" />
+            
         </Grid>
     </Grid>
 </UserControl>
