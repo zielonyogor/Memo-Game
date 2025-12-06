@@ -10,7 +10,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 {
     public class GameFinishedViewModel : ViewModelBase
     {
-        public int TotalPairs { get; }
+        public int TotalPairs { get; set;  }
 
         public ICommand BackToMenu { get; }
         private string _timeFormatted;
@@ -24,12 +24,13 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             }
         }
 
-        public GameFinishedViewModel(Action goBackToMainMenu, TimeSpan timeElapsed) 
+        public GameFinishedViewModel(Action goBackToMainMenu, TimeSpan timeElapsed, int matchedPairs) 
         {
             //add timeplayed
             //BackToMenu = new RelayCommand((_) => OnBackToMenu());
             BackToMenu = new RelayCommand((_) => goBackToMainMenu());
-            
+            TotalPairs = matchedPairs;
+
             TimeFormatted = timeElapsed.ToString(@"mm\:ss");
             Debug.WriteLine($"Game finished in {TimeFormatted}");
 

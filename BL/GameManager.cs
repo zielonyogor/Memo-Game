@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
+using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Timers;
 
 namespace NR155910155992.MemoGame.BL
 {
@@ -11,29 +12,51 @@ namespace NR155910155992.MemoGame.BL
 		public IDataAccessObject _dao;
 		private int? _firstRevealedCardId = null;
 		private bool _showingCards = false;
-        public bool IsShowingChoosenCards => _showingCards;
+		public bool IsShowingChoosenCards => _showingCards;
 
-        public event EventHandler<int> CardsMatched;
-        public event EventHandler CardsMismatched;
+		public event EventHandler<int> CardsMatched;
+		public event EventHandler CardsMismatched;
 		public event EventHandler GameFinished;
+		public event EventHandler<TimeSpan> TimeUpdated;
+
+		private System.Timers.Timer _timer;
+        public TimeSpan TimeElapsed { get; private set; }
 
         private int _matchedPairsCount = 0;
 		private int _totalPairs;
 
 
-        public GameManager(IConfiguration configuration)
+		public GameManager(IConfiguration configuration)
 		{
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 		}
+
+		public void StartNewGame()//maybe later as a return board from getrandomcardspositionedonboard
+		{
+			TimeElapsed = TimeSpan.Zero;
+			// Timer ticks every second
+			_timer = new System.Timers.Timer(1000);
+			_timer.Elapsed += Timer_Elapsed;
+			_timer.AutoReset = true;
+			_timer.Start();
+
+		}
+
+		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+		{
+			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
+			TimeUpdated?.Invoke(this, TimeElapsed);
+		}
+
 
 		public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards)
 		{
 			var cards = _dao.GetAllCards();
 
 			Random rnd = new Random();
-            var randomCards = cards.OrderBy(c => rnd.Next())
-                                   .Take(numberOfCards); 
+			var randomCards = cards.OrderBy(c => rnd.Next())
+								   .Take(numberOfCards);
 			return randomCards;
 		}
 
@@ -42,14 +65,14 @@ namespace NR155910155992.MemoGame.BL
 		{
 			_matchedPairsCount = 0;
 
-            int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
+			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
 			_totalPairs = uniqueCardsNeeded;
 
-            var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();
+			var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();
 
 			var duplicatedCards = cardSet.Concat(cardSet).ToList();
 
-            Random rnd = new Random();
+			Random rnd = new Random();
 			var shuffledCards = duplicatedCards.OrderBy(c => rnd.Next()).ToList();
 
 			var board = new ICard[rows, cols];
@@ -72,11 +95,14 @@ namespace NR155910155992.MemoGame.BL
 			return board;
 		}
 
+
+
+
 		public async Task OnCardClicked(int clickedCardId)
 		{
 			if (_showingCards)
 				return;
-			
+
 			if (_firstRevealedCardId == null)
 			{
 				_firstRevealedCardId = clickedCardId;
@@ -88,12 +114,13 @@ namespace NR155910155992.MemoGame.BL
 					CardsMatched?.Invoke(this, clickedCardId);
 					_matchedPairsCount++;
 					if (_matchedPairsCount >= _totalPairs)
-                    {
-						GameFinished?.Invoke(this, EventArgs.Empty);
-                    }
-                    Debug.WriteLine($"Matched cards: {clickedCardId}");
+					{
+						FinishGame();
 
-				
+					}
+					Debug.WriteLine($"Matched cards: {clickedCardId}");
+
+
 
 				}
 				else
@@ -101,11 +128,18 @@ namespace NR155910155992.MemoGame.BL
 					_showingCards = true;
 					await Task.Delay(1000);
 					CardsMismatched?.Invoke(this, EventArgs.Empty);
-                    Debug.WriteLine($"No match: {_firstRevealedCardId} and {clickedCardId}");
+					Debug.WriteLine($"No match: {_firstRevealedCardId} and {clickedCardId}");
 					_showingCards = false;
-                }
+				}
 				_firstRevealedCardId = null;
 			}
+		}
+		public void FinishGame()
+		{
+			_timer.Stop();
+			_timer.Dispose();
+			//_dao.CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode);
+			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

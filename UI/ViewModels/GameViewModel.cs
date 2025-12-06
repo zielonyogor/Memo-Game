@@ -11,25 +11,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 	{
 		private readonly IGameManager _gameManager;
 
-        private DispatcherTimer _timer;
-        private TimeSpan _timeElapsed;
-        public TimeSpan TimeElapsed
-        {
-            get => _timeElapsed;
-            private set
-            {
-                _timeElapsed = value;
-                OnPropertyChanged(nameof(TimeElapsed));
-            }
-        }
-        public string ElapsedTimeString => _timeElapsed.ToString(@"mm\:ss");
         public ObservableCollection<CardViewModel> Cards { get; set; }
         public GameFinishedViewModel GameFinishedViewModel { get; private set; }
 
-        public int Rows { get; private set; }
+        public int Rows { get; private set; } //propably move to some struct and maybe make setting where you can edit it
 		public int Columns { get; private set; }
-
-		public ICommand BackToMenu{ get; }
+        private TimeSpan timeElapsed;
+        public string ElapsedTimeString => timeElapsed.ToString(@"mm\:ss");
+        public ICommand BackToMenu{ get; }
         public Action GoBackToMainMenuAction;
 
         private Visibility finishedOverlayVisibility;
@@ -43,7 +32,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             {
                 finishedOverlayVisibility = value;
 
-                OnPropertyChanged("Visibility");
+                OnPropertyChanged(nameof(FinishedOverlayVisibility));
             }
         }
         public GameViewModel(IGameManager gameManager, Action goBackToMainMenu)
@@ -56,16 +45,26 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 
             SetupCards();
-            TimerInit();
+            _gameManager.StartNewGame();
             _gameManager.GameFinished += (s, e) =>
 			{
 				Debug.WriteLine("Game Finished!");
 				OnGameFinished();
 			};
 
+            _gameManager.TimeUpdated += (s, timeElapsed) =>
+            {
+                this.timeElapsed = timeElapsed;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    OnPropertyChanged(nameof(ElapsedTimeString)); 
+                });
+            };
+
+
         }
 
-		private void SetupCards()
+        private void SetupCards()
 		{
             FinishedOverlayVisibility = Visibility.Hidden;
 			Rows = 2;
@@ -86,28 +85,13 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			}
 		}
 		
-        private void TimerInit()
-        {
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += TimerTick;
-            _timer.Start();
-
-        }
-        private void TimerTick(object? sender, EventArgs e)
-        {
-            _timeElapsed = _timeElapsed.Add(TimeSpan.FromSeconds(1));
-            OnPropertyChanged(nameof(ElapsedTimeString));
-        }
 
         private void OnGameFinished()
 		{
-            _timer.Stop();
-            Debug.WriteLine($"Matchedallcards! in {_timeElapsed} seconds" );
-			GameFinishedViewModel = new GameFinishedViewModel(GoBackToMainMenuAction, _timeElapsed);
+            int _matchedPairs = Cards.Count / 2;
+            GameFinishedViewModel = new GameFinishedViewModel(GoBackToMainMenuAction, timeElapsed, _matchedPairs);
             OnPropertyChanged(nameof(GameFinishedViewModel));
             FinishedOverlayVisibility = Visibility.Visible;
-            OnPropertyChanged(nameof(FinishedOverlayVisibility));
         }
 
         

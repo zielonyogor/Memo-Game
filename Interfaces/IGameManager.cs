@@ -3,12 +3,16 @@
 	public interface IGameManager
 	{
 		public bool IsShowingChoosenCards { get;}
-		public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards);
+        public TimeSpan TimeElapsed { get; }
+        public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards);
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int columns); //different for different game modes
+        public void StartNewGame();
+        public void FinishGame();
 
-		public Task OnCardClicked(int clickedCardId);
+        public Task OnCardClicked(int clickedCardId);
         public event EventHandler<int> CardsMatched;
 		public event EventHandler CardsMismatched;
         public event EventHandler GameFinished;
+        public event EventHandler<TimeSpan> TimeUpdated;
     }
 }
