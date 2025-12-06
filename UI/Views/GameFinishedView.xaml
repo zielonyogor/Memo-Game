@@ -23,7 +23,15 @@
                        FontSize="32"
                        FontWeight="Bold"
                        HorizontalAlignment="Center"/>
-
+            <TextBlock
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Margin="10"
+                       HorizontalAlignment="Center">
+                <Run Text="Time: " />
+                <Run Text="{Binding TimeFormatted}" />
+            </TextBlock>
+                
             <Button Content="Back to Menu"
                     Command="{Binding BackToMenu}"
                     Width="150"

@@ -40,7 +40,9 @@ namespace NR155910155992.MemoGame.BL
 		//retrurns a board fileed with shuffled cards
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int cols)
 		{
-			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
+			_matchedPairsCount = 0;
+
+            int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
 			_totalPairs = uniqueCardsNeeded;
 
             var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();

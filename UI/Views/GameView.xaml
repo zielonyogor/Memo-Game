@@ -16,6 +16,11 @@
         <Button Content="Back to Main Menu"
                 HorizontalAlignment="Left" Margin="5"
                 Command="{Binding BackToMenu}"/>
+        <TextBlock Text="{Binding ElapsedTimeString}"
+           FontSize="20"
+           FontWeight="Bold"
+           HorizontalAlignment="Right"
+           Margin="10"/>
         <Grid Grid.Row="1">
             <ItemsControl ItemsSource="{Binding Cards}" Margin="20">
                 <ItemsControl.ItemsPanel>
@@ -34,8 +39,11 @@
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
 
-            <local:GameFinishedView Visibility ="{Binding FinishedOverlayVisibility}" />
-            
+            <local:GameFinishedView
+                DataContext="{Binding GameFinishedViewModel}"
+                Visibility="{Binding DataContext.FinishedOverlayVisibility,
+                         RelativeSource={RelativeSource AncestorType=local:GameView}}"/>
+
         </Grid>
     </Grid>
 </UserControl>

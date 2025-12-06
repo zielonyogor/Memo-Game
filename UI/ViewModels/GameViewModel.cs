@@ -1,8 +1,9 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows.Input;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
@@ -10,7 +11,19 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 	{
 		private readonly IGameManager _gameManager;
 
-		public ObservableCollection<CardViewModel> Cards { get; set; }
+        private DispatcherTimer _timer;
+        private TimeSpan _timeElapsed;
+        public TimeSpan TimeElapsed
+        {
+            get => _timeElapsed;
+            private set
+            {
+                _timeElapsed = value;
+                OnPropertyChanged(nameof(TimeElapsed));
+            }
+        }
+        public string ElapsedTimeString => _timeElapsed.ToString(@"mm\:ss");
+        public ObservableCollection<CardViewModel> Cards { get; set; }
         public GameFinishedViewModel GameFinishedViewModel { get; private set; }
 
         public int Rows { get; private set; }
@@ -43,8 +56,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 
             SetupCards();
-
-			_gameManager.GameFinished += (s, e) =>
+            TimerInit();
+            _gameManager.GameFinished += (s, e) =>
 			{
 				Debug.WriteLine("Game Finished!");
 				OnGameFinished();
@@ -72,23 +85,32 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				}
 			}
 		}
-		private void OnGameFinished()
+		
+        private void TimerInit()
+        {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += TimerTick;
+            _timer.Start();
+
+        }
+        private void TimerTick(object? sender, EventArgs e)
+        {
+            _timeElapsed = _timeElapsed.Add(TimeSpan.FromSeconds(1));
+            OnPropertyChanged(nameof(ElapsedTimeString));
+        }
+
+        private void OnGameFinished()
 		{
-            Debug.WriteLine("Matchedallcards!");
-			GameFinishedViewModel = new GameFinishedViewModel(GoBackToMainMenuAction);
+            _timer.Stop();
+            Debug.WriteLine($"Matchedallcards! in {_timeElapsed} seconds" );
+			GameFinishedViewModel = new GameFinishedViewModel(GoBackToMainMenuAction, _timeElapsed);
             OnPropertyChanged(nameof(GameFinishedViewModel));
             FinishedOverlayVisibility = Visibility.Visible;
             OnPropertyChanged(nameof(FinishedOverlayVisibility));
-            // Logic to handle game completion, e.g., notify the user or navigate back to the menu
         }
 
-		//private void OnBackToMenu()
-		//{
-  //          Debug.WriteLine("Back to menu clicked");
-  //          FinishedOverlayVisibility = Visibility.Collapsed;
-  //          OnPropertyChanged(nameof(FinishedOverlayVisibility));
+        
 
-
-  //      }
     }
 }
