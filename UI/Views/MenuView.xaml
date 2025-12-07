@@ -23,6 +23,9 @@
             <Button Content="Change User" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ChangeCurrentUser}"/>
+            <Button Content="See game history" 
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ShowSessionHistory}"/>
         </StackPanel>
     </Grid>
 </UserControl>

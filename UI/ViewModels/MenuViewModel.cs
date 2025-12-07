@@ -8,12 +8,13 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ICommand StartGameCommand { get; }
 		public ICommand ChangeCurrentUser { get; }
-
-		public MenuViewModel(Action startGameNavigation)
+		public ICommand ShowSessionHistory { get; }
+        public MenuViewModel(Action startGameNavigation, Action startShowingSessions)
 		{
 			StartGameCommand = new RelayCommand((_) => startGameNavigation());
 			ChangeCurrentUser = new RelayCommand((_) => ChangeUser());
-		}
+			ShowSessionHistory = new RelayCommand((_) => startShowingSessions());
+        }
 
 		private void ChangeUser()
 		{

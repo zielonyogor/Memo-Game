@@ -1,4 +1,6 @@
-﻿namespace NR155910155992.MemoGame.Interfaces
+﻿using NR155910155992.MemoGame.Core;
+
+namespace NR155910155992.MemoGame.Interfaces
 {
 	public interface IGameManager
 	{
@@ -6,7 +8,7 @@
         public TimeSpan TimeElapsed { get; }
         public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards);
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int columns); //different for different game modes
-        public void StartNewGame();
+        public void StartNewGame(GameMode gameMode, GameType gameType);
         public void FinishGame();
 
         public Task OnCardClicked(int clickedCardId);

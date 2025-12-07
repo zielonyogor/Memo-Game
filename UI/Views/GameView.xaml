@@ -15,6 +15,7 @@
         </Grid.RowDefinitions>
         <Button Content="Back to Main Menu"
                 HorizontalAlignment="Left" Margin="5"
+                Style="{StaticResource SecondaryButton}"
                 Command="{Binding BackToMenu}"/>
         <TextBlock Text="{Binding ElapsedTimeString}"
            FontSize="20"
