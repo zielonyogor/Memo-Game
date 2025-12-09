@@ -1,6 +1,7 @@
 ﻿using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.JsonDao.Models;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.JsonDao
 {
@@ -80,8 +81,10 @@ namespace NR155910155992.MemoGame.JsonDao
 				GameMode = gameMode
 			};
 
-			_gameSessions.Add(gameSession);
-			SaveToFile(_gameSessionsPath, _gameSessions);
+            Debug.WriteLine($"Before adding number of game sessions in dao list: {_gameSessions.Count()}");
+            _gameSessions.Add(gameSession);
+			Debug.WriteLine($"Created GameSession with Id: {gameSession.Id}, number of game sessions in dao list: {_gameSessions.Count()}");
+            SaveToFile(_gameSessionsPath, _gameSessions);
 
 			return gameSession;
 		}

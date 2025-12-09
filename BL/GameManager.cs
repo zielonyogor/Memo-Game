@@ -25,25 +25,31 @@ namespace NR155910155992.MemoGame.BL
         private int _matchedPairsCount = 0;
 		private int _totalPairs;
 
-
-		public GameManager(IConfiguration configuration)
+		private GameMode GameMode;//also propably should be kept somewhere seperate, maybe with size of a board or numbers of pairs, something like gameinfo
+        private GameType GameType;
+        private DateTime Date;
+        public GameManager(IConfiguration configuration)
 		{
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 		}
 
-		public void StartNewGame()//maybe later as a return board from getrandomcardspositionedonboard
+		public void StartNewGame(GameMode gameMode, GameType gameType)//maybe later as a return board from getrandomcardspositionedonboard
 		{
-			TimeElapsed = TimeSpan.Zero;
+			GameMode= gameMode;
+			GameType= gameType;
+			Date = DateTime.Now;
+
+            TimeElapsed = TimeSpan.Zero;
 			// Timer ticks every second
 			_timer = new System.Timers.Timer(1000);
-			_timer.Elapsed += Timer_Elapsed;
+			_timer.Elapsed += TimerElapsed;
 			_timer.AutoReset = true;
 			_timer.Start();
 
 		}
 
-		private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+		private void TimerElapsed(object sender, ElapsedEventArgs e)
 		{
 			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
 			TimeUpdated?.Invoke(this, TimeElapsed);
@@ -138,8 +144,15 @@ namespace NR155910155992.MemoGame.BL
 		{
 			_timer.Stop();
 			_timer.Dispose();
-			//_dao.CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode);
+			_dao.CreateGameSession(Date, TimeElapsed, GameType, GameMode);
 			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
-	}
+
+
+
+        public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
+        {
+            return _dao.GetAllGameSessions();
+        }
+    }
 }

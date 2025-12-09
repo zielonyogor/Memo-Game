@@ -8,6 +8,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/ButtonStyles.xaml" />
                 <ResourceDictionary Source="/Styles/CardStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/DataGridStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <converters:InvertedBoolConverter x:Key="InverseBoolConverter"/>

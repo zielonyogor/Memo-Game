@@ -26,14 +26,10 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
         public GameFinishedViewModel(Action goBackToMainMenu, TimeSpan timeElapsed, int matchedPairs) 
         {
-            //add timeplayed
-            //BackToMenu = new RelayCommand((_) => OnBackToMenu());
             BackToMenu = new RelayCommand((_) => goBackToMainMenu());
             TotalPairs = matchedPairs;
 
             TimeFormatted = timeElapsed.ToString(@"mm\:ss");
-            Debug.WriteLine($"Game finished in {TimeFormatted}");
-
         }
 
     }

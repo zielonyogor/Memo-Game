@@ -32,10 +32,12 @@ namespace NR155910155992.MemoGame.UI
 				new object[] { config }
 			);
 
-			var services = new ServiceCollection();
+
+            var services = new ServiceCollection();
 			services.AddSingleton<MainWindow>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<IGameManager>(gameManager);
+
 
             _serviceProvider = services.BuildServiceProvider();
 

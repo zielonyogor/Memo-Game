@@ -45,7 +45,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 
             SetupCards();
-            _gameManager.StartNewGame();
+            _gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);
             _gameManager.GameFinished += (s, e) =>
 			{
 				Debug.WriteLine("Game Finished!");
@@ -63,7 +63,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 
         }
-
         private void SetupCards()
 		{
             FinishedOverlayVisibility = Visibility.Hidden;
@@ -84,8 +83,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				}
 			}
 		}
-		
-
         private void OnGameFinished()
 		{
             int _matchedPairs = Cards.Count / 2;
@@ -93,8 +90,5 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             OnPropertyChanged(nameof(GameFinishedViewModel));
             FinishedOverlayVisibility = Visibility.Visible;
         }
-
-        
-
     }
 }
