@@ -147,5 +147,12 @@ namespace NR155910155992.MemoGame.BL
 			_dao.CreateGameSession(Date, TimeElapsed, GameType, GameMode);
 			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
-	}
+
+
+
+        public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
+        {
+            return _dao.GetAllGameSessions();
+        }
+    }
 }

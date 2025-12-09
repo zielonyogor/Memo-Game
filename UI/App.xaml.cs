@@ -31,16 +31,12 @@ namespace NR155910155992.MemoGame.UI
 				LibraryKey.Bl,
 				new object[] { config }
 			);
-            IGameSessionHistory gameSessionHistory = libraryLoader.LoadObjectFromLibrary<IGameSessionHistory>(
-                LibraryKey.Bl,
-                new object[] { config }
-            );
+
 
             var services = new ServiceCollection();
 			services.AddSingleton<MainWindow>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<IGameManager>(gameManager);
-            services.AddSingleton<IGameSessionHistory>(gameSessionHistory);
 
 
             _serviceProvider = services.BuildServiceProvider();
