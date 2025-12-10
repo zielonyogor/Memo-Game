@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using NR155910155992.MemoGame.Core;
+﻿using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
-using System;
-using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using System.Timers;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.BL
 {
@@ -28,10 +27,15 @@ namespace NR155910155992.MemoGame.BL
 		private GameMode GameMode;//also propably should be kept somewhere seperate, maybe with size of a board or numbers of pairs, something like gameinfo
         private GameType GameType;
         private DateTime Date;
-        public GameManager(IConfiguration configuration)
+
+		private UserProfileController userProfileController;
+
+		public GameManager(IConfiguration configuration)
 		{
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
+
+			userProfileController = new UserProfileController(_dao);
 		}
 
 		public void StartNewGame(GameMode gameMode, GameType gameType)//maybe later as a return board from getrandomcardspositionedonboard
@@ -101,9 +105,6 @@ namespace NR155910155992.MemoGame.BL
 			return board;
 		}
 
-
-
-
 		public async Task OnCardClicked(int clickedCardId)
 		{
 			if (_showingCards)
@@ -148,11 +149,24 @@ namespace NR155910155992.MemoGame.BL
 			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
 
-
-
         public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
         {
             return _dao.GetAllGameSessions();
-        }
-    }
+		}
+
+		public IUserProfile? GetCurrentUserProfile()
+		{
+			return userProfileController.GetCurrentUserProfile();
+		}
+
+		public void SetCurrentUserProfile(IUserProfile userProfile)
+		{
+			userProfileController.SetCurrentUserProfile(userProfile);
+		}
+
+		public IEnumerable<IUserProfile> GetAllUserProfiles()
+		{
+			return userProfileController.GetAllUserProfiles();
+		}
+	}
 }

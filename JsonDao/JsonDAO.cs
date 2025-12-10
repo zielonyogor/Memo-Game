@@ -52,11 +52,6 @@ namespace NR155910155992.MemoGame.JsonDao
 			return _gameSessions;
 		}
 
-		public IEnumerable<IUserProfile> GetAllUserProfiles()
-		{
-			return _userProfiles;
-		}
-
 		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile)
 		{
 			return _gameSessions
@@ -121,6 +116,16 @@ namespace NR155910155992.MemoGame.JsonDao
 			SaveToFile(_playerGameResultsPath, _playerGameResults);
 
 			return playerGameResult;
+		}
+
+		public IUserProfile GetFirstUserProfile()
+		{
+			return _userProfiles[0];
+		}
+
+		public IEnumerable<IUserProfile> GetAllUserProfiles()
+		{
+			return _userProfiles;
 		}
 
 		private void LoadData()

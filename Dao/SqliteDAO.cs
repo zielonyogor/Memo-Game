@@ -23,6 +23,11 @@ namespace NR155910155992.MemoGame.Dao
 			return _db.UserProfiles.ToList();
 		}
 
+		public IUserProfile GetFirstUserProfile()
+		{
+			return _db.UserProfiles.First();
+		}
+
 		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile)
 		{
 			return _db.GameSessions

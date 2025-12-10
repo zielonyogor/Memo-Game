@@ -19,8 +19,13 @@
         <DataTemplate DataType="{x:Type vm:MenuViewModel}">
             <views:MenuView />
         </DataTemplate>
+        
         <DataTemplate DataType="{x:Type vm:GameSessionViewModel}">
             <views:GameSessionView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:UsersViewModel}">
+            <views:UsersView />
         </DataTemplate>
     </Window.Resources>
 

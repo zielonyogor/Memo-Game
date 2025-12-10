@@ -8,7 +8,6 @@ namespace NR155910155992.MemoGame.Interfaces
 		public IEnumerable<ICard> GetAllCards();
 		public IEnumerable<IGameSession> GetAllGameSessions();
 		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile);
-		public IEnumerable<IUserProfile> GetAllUserProfiles();
 		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession);
 
 
@@ -16,5 +15,9 @@ namespace NR155910155992.MemoGame.Interfaces
 		public IUserProfile CreateNewUserProfile(string userName);
 		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode);
 		public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner);
+
+
+		public IUserProfile GetFirstUserProfile();
+		public IEnumerable<IUserProfile> GetAllUserProfiles();
 	}
 }

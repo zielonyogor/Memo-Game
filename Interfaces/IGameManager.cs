@@ -17,5 +17,10 @@ namespace NR155910155992.MemoGame.Interfaces
 		public event EventHandler CardsMismatched;
         public event EventHandler GameFinished;
         public event EventHandler<TimeSpan> TimeUpdated;
-    }
+
+		public IUserProfile? GetCurrentUserProfile();
+        public IEnumerable<IUserProfile> GetAllUserProfiles();
+
+		public void SetCurrentUserProfile(IUserProfile userProfile);
+	}
 }

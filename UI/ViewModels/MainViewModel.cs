@@ -15,13 +15,12 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public MainViewModel(IGameManager gameManager)
 		{
 			_gameManager = gameManager;
-            _currentView = new MenuViewModel(StartGame, ShowSessionHistory);
+			ShowMenu();
 		}
 
 		private void ShowMenu()
 		{
-			Debug.WriteLine("Returning to menu...");
-            CurrentView = new MenuViewModel(StartGame, ShowSessionHistory);
+            CurrentView = new MenuViewModel(_gameManager, StartGame, ShowSessionHistory, ShowUserSelection);
 		}
 
 		private void StartGame()
@@ -33,5 +32,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		{
             CurrentView = new GameSessionViewModel(_gameManager, ShowMenu);
         }
-    }
+
+		private void ShowUserSelection()
+		{
+			CurrentView = new UsersViewModel(_gameManager, ShowMenu);
+		}
+
+	}
 }

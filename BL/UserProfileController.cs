@@ -1,0 +1,32 @@
+﻿using NR155910155992.MemoGame.Interfaces;
+
+namespace NR155910155992.MemoGame.BL
+{
+	internal class UserProfileController
+	{
+		private IDataAccessObject _dao;
+
+		private IUserProfile? currentUserProfile;
+
+		public UserProfileController(IDataAccessObject dao) 
+		{
+			_dao = dao;
+			currentUserProfile = dao.GetFirstUserProfile();
+		}
+		
+		public IUserProfile? GetCurrentUserProfile()
+		{
+			return currentUserProfile;
+		}
+
+		public IEnumerable<IUserProfile> GetAllUserProfiles()
+		{
+			return _dao.GetAllUserProfiles();
+		}
+
+		public void SetCurrentUserProfile(IUserProfile user)
+		{
+			currentUserProfile = user;
+		}
+	}
+}
