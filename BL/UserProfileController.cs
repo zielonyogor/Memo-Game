@@ -28,5 +28,11 @@ namespace NR155910155992.MemoGame.BL
 		{
 			currentUserProfile = user;
 		}
+
+		public IUserProfile CreateNewUserProfile(string userName)
+		{
+			var newUser = _dao.CreateNewUserProfile(userName);
+			return newUser;
+		}
 	}
 }

@@ -46,8 +46,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		{
 			if (string.IsNullOrWhiteSpace(NewUserName))
 				return;
-			//var newUser = _gameManager.CreateUserProfile(NewUserName.Trim());
-			//Users.Add(newUser);
+			var newUser = _gameManager.CreateNewUserProfile(NewUserName.Trim());
+			Users.Add(newUser);
 			NewUserName = string.Empty;
 		}
 

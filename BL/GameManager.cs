@@ -168,5 +168,10 @@ namespace NR155910155992.MemoGame.BL
 		{
 			return userProfileController.GetAllUserProfiles();
 		}
+
+		public IUserProfile CreateNewUserProfile(string userName)
+		{
+			return userProfileController.CreateNewUserProfile(userName);
+		}
 	}
 }
