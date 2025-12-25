@@ -1,10 +1,7 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
-using System;
-using System.Collections.Generic;
+using NR155910155992.MemoGame.UI.Commands;
+using NR155910155992.MemoGame.UI.Services;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
@@ -12,7 +9,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 	class UsersViewModel : ViewModelBase
 	{
 		private readonly IGameManager _gameManager;
-		private readonly Action _returnToMenu;
+		private readonly INavigationService _menuNavigationService;
 
 		public ObservableCollection<IUserProfile> Users { get; set; }
 
@@ -26,10 +23,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public ICommand AddUserCommand { get; }
 		public ICommand BackCommand { get; }
 
-		public UsersViewModel(IGameManager gameManager, Action returnToMenu)
+		public UsersViewModel(IGameManager gameManager, INavigationService menuNavigationService)
 		{
 			_gameManager = gameManager;
-			_returnToMenu = returnToMenu;
+			_menuNavigationService = menuNavigationService;
+
 			Users = new ObservableCollection<IUserProfile>(_gameManager.GetAllUserProfiles());
 			SelectUserCommand = new RelayCommand<IUserProfile>((user) => SelectUser(user));
 			AddUserCommand = new RelayCommand((_) => AddUser());
@@ -39,7 +37,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		private void SelectUser(IUserProfile user)
 		{
 			_gameManager.SetCurrentUserProfile(user);
-			_returnToMenu();
+			Back();
 		}
 
 		private void AddUser()
@@ -53,7 +51,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Back()
 		{
-			_returnToMenu();
+			_menuNavigationService.Navigate();
 		}
 	}
 }

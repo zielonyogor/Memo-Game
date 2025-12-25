@@ -1,8 +1,8 @@
 ﻿using System.Windows.Input;
 
-namespace NR155910155992.MemoGame.UI
+namespace NR155910155992.MemoGame.UI.Commands
 {
-	internal class RelayCommand : ICommand
+	public class RelayCommand : ICommand
 	{
 		public event EventHandler? CanExecuteChanged {
 			add { CommandManager.RequerySuggested += value; }
@@ -33,7 +33,7 @@ namespace NR155910155992.MemoGame.UI
 		}
 	}
 
-	internal class RelayCommand<T> : ICommand
+	public class RelayCommand<T> : ICommand
 	{
 		public event EventHandler? CanExecuteChanged {
 			add { CommandManager.RequerySuggested += value; }

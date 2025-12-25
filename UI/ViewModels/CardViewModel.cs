@@ -1,4 +1,5 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
+using NR155910155992.MemoGame.UI.Commands;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Media;

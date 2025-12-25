@@ -1,42 +1,36 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
+using NR155910155992.MemoGame.UI.Stores;
 using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
 	public class MainViewModel : ViewModelBase
 	{
-		private readonly IGameManager _gameManager;
-        private ViewModelBase _currentView;
-		public ViewModelBase CurrentView {
-			get => _currentView;
-			set { _currentView = value; OnPropertyChanged(); }
+		private readonly NavigationStore _navigationStore;
+		private readonly ModalNavigationStore _modalNavigationStore;
+
+		public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
+		public ViewModelBase CurrentModalViewModel => _modalNavigationStore.CurrentViewModel;
+		public bool IsModalOpen => _modalNavigationStore.IsOpen;
+
+		public MainViewModel(NavigationStore navigationStore, ModalNavigationStore modalNavigationStore)
+		{
+			_navigationStore = navigationStore;
+			_modalNavigationStore = modalNavigationStore;
+
+			_navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+			_modalNavigationStore.CurrentViewModelChanged += OnCurrentModalViewModelChanged;
 		}
 
-		public MainViewModel(IGameManager gameManager)
+		private void OnCurrentViewModelChanged()
 		{
-			_gameManager = gameManager;
-			ShowMenu();
+			OnPropertyChanged(nameof(CurrentViewModel));
 		}
 
-		private void ShowMenu()
+		private void OnCurrentModalViewModelChanged()
 		{
-            CurrentView = new MenuViewModel(_gameManager, StartGame, ShowSessionHistory, ShowUserSelection);
+			OnPropertyChanged(nameof(CurrentModalViewModel));
+			OnPropertyChanged(nameof(IsModalOpen));
 		}
-
-		private void StartGame()
-		{
-			CurrentView = new GameViewModel(_gameManager, ShowMenu);
-		}
-
-		private void ShowSessionHistory()
-		{
-            CurrentView = new GameSessionViewModel(_gameManager, ShowMenu);
-        }
-
-		private void ShowUserSelection()
-		{
-			CurrentView = new UsersViewModel(_gameManager, ShowMenu);
-		}
-
 	}
 }

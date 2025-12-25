@@ -9,7 +9,13 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=vm:UsersViewModel}">
     <Grid Background="#FDFDFD">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Content="Back to Menu" 
+            Style="{StaticResource PrimaryButton}"
+            Command="{Binding BackCommand}"/>
+            </StackPanel>
+            
             <TextBlock Text="Users" 
                     FontSize="36"
                     FontWeight="ExtraBold"

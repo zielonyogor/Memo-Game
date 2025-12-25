@@ -1,4 +1,7 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
+using NR155910155992.MemoGame.UI.Commands;
+using NR155910155992.MemoGame.UI.Models;
+using NR155910155992.MemoGame.UI.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
@@ -10,49 +13,40 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 	public class GameViewModel : ViewModelBase
 	{
 		private readonly IGameManager _gameManager;
+		private readonly INavigationService _menuNavigationService; 
+		private readonly IParameterNavigationService<GameResult> _gameFinishedNavigationService;
 
-        public ObservableCollection<CardViewModel> Cards { get; set; }
-        public GameFinishedViewModel GameFinishedViewModel { get; private set; }
+		public ObservableCollection<CardViewModel> Cards { get; set; }
 
-        public int Rows { get; private set; } //propably move to some struct and maybe make setting where you can edit it
-		public int Columns { get; private set; }
+		// TODO: Move to a struct (and later make possible to edit)
+		public int Rows { get; private set; } = 2;
+		public int Columns { get; private set; } = 2;
+
         private TimeSpan timeElapsed;
         public string ElapsedTimeString => timeElapsed.ToString(@"mm\:ss");
-        public ICommand BackToMenu{ get; }
-        public Action GoBackToMainMenuAction;
 
-        private Visibility finishedOverlayVisibility;
-        public Visibility FinishedOverlayVisibility
-        {
-            get
-            {
-                return finishedOverlayVisibility;
-            }
-            set
-            {
-                finishedOverlayVisibility = value;
+		public ICommand BackCommand { get; }
+		public Action GoBackToMainMenuAction;
 
-                OnPropertyChanged(nameof(FinishedOverlayVisibility));
-            }
-        }
-        public GameViewModel(IGameManager gameManager, Action goBackToMainMenu)
-        {
-            GoBackToMainMenuAction = goBackToMainMenu;
+        public GameViewModel(IGameManager gameManager, INavigationService menuNavigationService, IParameterNavigationService<GameResult> gameFinishedNavigationService)
+		{
+			_gameManager = gameManager;
+			_menuNavigationService = menuNavigationService;
+			_gameFinishedNavigationService = gameFinishedNavigationService;
 
-            BackToMenu = new RelayCommand((_) => goBackToMainMenu());
+			BackCommand = new RelayCommand((_) => Back());
 
-            _gameManager = gameManager;
-
-
-            SetupCards();
-            _gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);
-            _gameManager.GameFinished += (s, e) =>
+			SetupCards();
+			_gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);
+			_gameManager.GameFinished += (_, __) =>
 			{
-				Debug.WriteLine("Game Finished!");
-				OnGameFinished();
+				_gameFinishedNavigationService.Navigate(
+					new GameResult(
+						Rows * Columns / 2,
+						timeElapsed));
 			};
 
-            _gameManager.TimeUpdated += (s, timeElapsed) =>
+			_gameManager.TimeUpdated += (s, timeElapsed) =>
             {
                 this.timeElapsed = timeElapsed;
                 Application.Current.Dispatcher.Invoke(() =>
@@ -60,14 +54,10 @@ namespace NR155910155992.MemoGame.UI.ViewModels
                     OnPropertyChanged(nameof(ElapsedTimeString)); 
                 });
             };
+		}
 
-
-        }
         private void SetupCards()
 		{
-            FinishedOverlayVisibility = Visibility.Hidden;
-			Rows = 2;
-			Columns = 2;
             ICard [,] cards = _gameManager.GetRandomCardsPositionedOnBoard(Rows, Columns); 
             Cards = new ObservableCollection<CardViewModel>(); 
 			for( int r = 0; r < Rows; r++)
@@ -83,12 +73,10 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				}
 			}
 		}
-        private void OnGameFinished()
+
+		private void Back()
 		{
-            int _matchedPairs = Cards.Count / 2;
-            GameFinishedViewModel = new GameFinishedViewModel(GoBackToMainMenuAction, timeElapsed, _matchedPairs);
-            OnPropertyChanged(nameof(GameFinishedViewModel));
-            FinishedOverlayVisibility = Visibility.Visible;
-        }
-    }
+			_menuNavigationService.Navigate();
+		}
+	}
 }

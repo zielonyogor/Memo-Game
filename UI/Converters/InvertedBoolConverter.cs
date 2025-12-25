@@ -2,7 +2,8 @@
 using System.Windows.Data;
 
 namespace NR155910155992.MemoGame.UI.Converters
-{	public class InvertedBoolConverter : IValueConverter
+{	
+	public class InvertedBoolConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{

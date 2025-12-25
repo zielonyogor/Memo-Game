@@ -29,7 +29,7 @@
                        Margin="10"
                        HorizontalAlignment="Center">
                 <Run Text="You matched " />
-                <Run Text="{Binding TotalPairs}" />
+                <Run Text="{Binding TotalPairs, Mode=OneWay}" />
                 <Run Text=" pairs" />
             </TextBlock>
             <TextBlock
@@ -38,7 +38,7 @@
                        Margin="10"
                        HorizontalAlignment="Center">
                 <Run Text="Time: " />
-                <Run Text="{Binding TimeFormatted}" />
+                <Run Text="{Binding TimeFormatted, Mode=OneWay}" />
             </TextBlock>
 
             <Button Content="Back to Menu"

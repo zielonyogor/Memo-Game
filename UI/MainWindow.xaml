@@ -27,7 +27,21 @@
         <DataTemplate DataType="{x:Type vm:UsersViewModel}">
             <views:UsersView />
         </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type vm:GameFinishedViewModel}">
+            <views:GameFinishedView />
+        </DataTemplate>
     </Window.Resources>
+    <Grid>
+        <!-- Main content -->
+        <ContentControl
+            Content="{Binding CurrentViewModel}" />
 
-    <ContentControl Content="{Binding CurrentView}" />
+        <!-- Modal overlay -->
+        <ContentControl
+            Content="{Binding CurrentModalViewModel}"
+            Background="#80000000"
+            Visibility="{Binding IsModalOpen,
+                         Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
 </Window>

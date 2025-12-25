@@ -10,5 +10,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+		public virtual void Dispose() { }
 	}
 }

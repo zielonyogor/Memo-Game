@@ -1,36 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NR155910155992.MemoGame.UI.Commands;
+using NR155910155992.MemoGame.UI.Models;
+using NR155910155992.MemoGame.UI.Services;
 using System.Windows.Input;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
     public class GameFinishedViewModel : ViewModelBase
     {
-        public int TotalPairs { get; set;  }
+		public int TotalPairs { get; }
+		public string TimeFormatted { get; }
 
-        public ICommand BackToMenu { get; }
-        private string _timeFormatted;
-        public string TimeFormatted
-        {
-            get => _timeFormatted;
-            set
-            {
-                _timeFormatted = value;
-                OnPropertyChanged(nameof(TimeFormatted));
-            }
-        }
+		public ICommand BackToMenu { get; }
 
-        public GameFinishedViewModel(Action goBackToMainMenu, TimeSpan timeElapsed, int matchedPairs) 
-        {
-            BackToMenu = new RelayCommand((_) => goBackToMainMenu());
-            TotalPairs = matchedPairs;
+		public GameFinishedViewModel(
+			GameResult result,
+			INavigationService backToMenuNavigationService)
+		{
+			TotalPairs = result.TotalPairs;
+			TimeFormatted = result.ElapsedTime.ToString(@"mm\:ss");
 
-            TimeFormatted = timeElapsed.ToString(@"mm\:ss");
-        }
-
-    }
+			BackToMenu = new RelayCommand(_ => backToMenuNavigationService.Navigate());
+		}
+	}
 }
