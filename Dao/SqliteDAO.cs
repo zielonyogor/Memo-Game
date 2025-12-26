@@ -43,7 +43,7 @@ namespace NR155910155992.MemoGame.Dao
 				.ToList();
 		}
 
-		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode)
+		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users)
 		{
 			var gameSession = new GameSession
 			{

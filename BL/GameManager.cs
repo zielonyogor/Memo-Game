@@ -1,187 +1,75 @@
 ﻿using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using Microsoft.Extensions.Configuration;
-using System.Timers;
-using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.BL
 {
 	public class GameManager : IGameManager
 	{
-		public IDataAccessObject _dao;
-		private int? _firstRevealedCardId = null;
-		private bool _showingCards = false;
-		public bool IsShowingChoosenCards => _showingCards;
+		private readonly IDataAccessObject _dao;
+		private readonly UserProfileController _userController;
+		private readonly GameBoard _gameBoard;
+		private readonly GameHistoryManager _historyManager;
+		private readonly GameSessionManager _sessionManager;
 
-		public event EventHandler<int> CardsMatched;
-		public event EventHandler CardsMismatched;
-		public event EventHandler GameFinished;
-		public event EventHandler<TimeSpan> TimeUpdated;
+		public event EventHandler<int>? CardsMatched;
+		public event EventHandler? CardsMismatched;
+		public event EventHandler? GameFinished;
+		public event EventHandler<TimeSpan>? TimeUpdated;
 
-		private System.Timers.Timer _timer;
-		public TimeSpan TimeElapsed { get; private set; }
-
-		private int _matchedPairsCount = 0;
-		private int _totalPairs;
-
-		private GameMode GameMode;//also propably should be kept somewhere seperate, maybe with size of a board or numbers of pairs, something like gameinfo
-		private GameType GameType;
-		private DateTime Date;
-
-		private UserProfileController userProfileController;
+		public bool IsShowingChoosenCards => _sessionManager.IsProcessingMismatch;
 
 		public GameManager(IConfiguration configuration)
 		{
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 
-			userProfileController = new UserProfileController(_dao);
+			_userController = new UserProfileController(_dao);
+			_gameBoard = new GameBoard(_dao);
+			_historyManager = new GameHistoryManager(_dao);
+			_sessionManager = new GameSessionManager(_dao);
+
+			_sessionManager.TimeUpdated += (s, e) => TimeUpdated?.Invoke(this, e);
+			_sessionManager.CardMatched += (s, id) => CardsMatched?.Invoke(this, id);
+			_sessionManager.CardMismatched += (s, e) => CardsMismatched?.Invoke(this, EventArgs.Empty);
+			_sessionManager.GameFinished += OnSessionFinished;
 		}
 
-		public void StartNewGame(GameMode gameMode, GameType gameType)//maybe later as a return board from getrandomcardspositionedonboard
-		{
-			GameMode = gameMode;
-			GameType = gameType;
-			Date = DateTime.Now;
-
-			TimeElapsed = TimeSpan.Zero;
-			// Timer ticks every second
-			_timer = new System.Timers.Timer(1000);
-			_timer.Elapsed += TimerElapsed;
-			_timer.AutoReset = true;
-			_timer.Start();
-
-		}
-
-		private void TimerElapsed(object sender, ElapsedEventArgs e)
-		{
-			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
-			TimeUpdated?.Invoke(this, TimeElapsed);
-		}
-
-
-		public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards)
-		{
-			var cards = _dao.GetAllCards();
-
-			Random rnd = new Random();
-			var randomCards = cards.OrderBy(c => rnd.Next())
-								   .Take(numberOfCards);
-			return randomCards;
-		}
-
-		//retrurns a board fileed with shuffled cards
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int cols)
 		{
-			_matchedPairsCount = 0;
+			return _gameBoard.GenerateBoard(rows, cols);
+		}
 
-			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
-			_totalPairs = uniqueCardsNeeded;
+		public void StartNewGame(GameMode gameMode, GameType gameType)
+		{
+			int totalPairs = _gameBoard.TotalPairs;
 
-			var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();
+			if (totalPairs == 0)
+				throw new InvalidOperationException("Board not generated yet.");
 
-			var duplicatedCards = cardSet.Concat(cardSet).ToList();
-
-			Random rnd = new Random();
-			var shuffledCards = duplicatedCards.OrderBy(c => rnd.Next()).ToList();
-
-			var board = new ICard[rows, cols];
-			int index = 0;
-			for (int r = 0; r < rows; r++)
-			{
-				for (int c = 0; c < cols; c++)
-				{
-					if (index < shuffledCards.Count)
-					{
-						board[r, c] = shuffledCards[index];
-						index++;
-					}
-					else
-					{
-						board[r, c] = null; // In case of odd number of cells, leave last cell empty
-					}
-				}
-			}
-			return board;
+			_sessionManager.StartNewSession(gameMode, gameType, totalPairs);
 		}
 
 		public async Task OnCardClicked(int clickedCardId)
 		{
-			if (_showingCards)
-				return;
-
-			if (_firstRevealedCardId == null)
-			{
-				_firstRevealedCardId = clickedCardId;
-			}
-			else
-			{
-				if (_firstRevealedCardId == clickedCardId)
-				{
-					CardsMatched?.Invoke(this, clickedCardId);
-					_matchedPairsCount++;
-					if (_matchedPairsCount >= _totalPairs)
-					{
-						FinishGame();
-
-					}
-					Debug.WriteLine($"Matched cards: {clickedCardId}");
-
-
-
-				}
-				else
-				{
-					_showingCards = true;
-					await Task.Delay(1000);
-					CardsMismatched?.Invoke(this, EventArgs.Empty);
-					Debug.WriteLine($"No match: {_firstRevealedCardId} and {clickedCardId}");
-					_showingCards = false;
-				}
-				_firstRevealedCardId = null;
-			}
+			await _sessionManager.ProcessCardClick(clickedCardId);
 		}
-		public void FinishGame()
+
+		private void OnSessionFinished(object? sender, EventArgs e)
 		{
-			_timer.Stop();
-			_timer.Dispose();
-			_dao.CreateGameSession(Date, TimeElapsed, GameType, GameMode);
+			var users = _userController.GetCurrentlyPlayingUsers();
+			_sessionManager.SaveSession(users);
 			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
 
-		public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
-		{
-			return _dao.GetAllGameSessions();
-		}
+		public IEnumerable<ICard> GetRandomSetOfCards(int count) => _gameBoard.GetRandomSetOfCards(count);
+		public IEnumerable<IGameSession> GetAllGameSessions() => _historyManager.GetAllGameSessions();
 
-		public IUserProfile? GetCurrentUserProfile()
-		{
-			return userProfileController.GetCurrentUserProfile();
-		}
-
-		public void SetCurrentUserProfile(IUserProfile userProfile)
-		{
-			userProfileController.SetCurrentUserProfile(userProfile);
-		}
-
-		public IEnumerable<IUserProfile> GetAllUserProfiles()
-		{
-			return userProfileController.GetAllUserProfiles();
-		}
-
-		public IUserProfile CreateNewUserProfile(string userName)
-		{
-			return userProfileController.CreateNewUserProfile(userName);
-		}
-
-		public void DeleteUserProfile(IUserProfile userProfile)
-		{
-			userProfileController.DeleteUserProfile(userProfile);
-		}
-
-		public void UpdateUserProfile(IUserProfile userProfile, string newUsername)
-		{
-			userProfileController.UpdateUserProfile(userProfile, newUsername);
-		}
+		public IUserProfile? GetCurrentUserProfile() => _userController.GetCurrentUserProfile();
+		public void SetCurrentUserProfile(IUserProfile profile) => _userController.SetCurrentUserProfile(profile);
+		public IEnumerable<IUserProfile> GetAllUserProfiles() => _userController.GetAllUserProfiles();
+		public IUserProfile CreateNewUserProfile(string name) => _userController.CreateNewUserProfile(name);
+		public void DeleteUserProfile(IUserProfile profile) => _userController.DeleteUserProfile(profile);
+		public void UpdateUserProfile(IUserProfile profile, string name) => _userController.UpdateUserProfile(profile, name);
 	}
 }

@@ -14,9 +14,9 @@ namespace NR155910155992.MemoGame.BL
 			currentUserProfile = dao.GetFirstUserProfile();
 		}
 		
-		public IUserProfile? GetCurrentUserProfile()
+		public IUserProfile GetCurrentUserProfile()
 		{
-			return currentUserProfile;
+			return currentUserProfile ?? throw new InvalidOperationException("No user profile is currently set.");
 		}
 
 		public IEnumerable<IUserProfile> GetAllUserProfiles()
@@ -40,7 +40,7 @@ namespace NR155910155992.MemoGame.BL
 			_dao.DeleteUserProfile(userProfile);
 			if (currentUserProfile == userProfile)
 			{
-				currentUserProfile = _dao.GetFirstUserProfile();
+				currentUserProfile = _dao.GetFirstUserProfile(); // fallback to first user profile
 			}
 		}
 
@@ -49,6 +49,14 @@ namespace NR155910155992.MemoGame.BL
 			var updatedProfile = userProfile;
 			updatedProfile.UserName = newUsername.Trim();
 			_dao.UpdateUserProfile(updatedProfile);
+		}
+
+		public IEnumerable<IUserProfile> GetCurrentlyPlayingUsers()
+		{
+			return new List<IUserProfile>()
+			{
+				currentUserProfile
+			};
 		}
 	}
 }

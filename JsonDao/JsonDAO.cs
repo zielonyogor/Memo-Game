@@ -65,7 +65,7 @@ namespace NR155910155992.MemoGame.JsonDao
 				.ToList();
 		}
 
-		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode)
+		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users)
 		{
 			var gameSession = new GameSession
 			{
@@ -73,7 +73,7 @@ namespace NR155910155992.MemoGame.JsonDao
 				GameDate = date,
 				Duration = duration,
 				GameType = gameType,
-				GameMode = gameMode
+				GameMode = gameMode,
 			};
 
             Debug.WriteLine($"Before adding number of game sessions in dao list: {_gameSessions.Count()}");
