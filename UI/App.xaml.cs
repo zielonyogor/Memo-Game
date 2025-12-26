@@ -72,10 +72,9 @@ namespace NR155910155992.MemoGame.UI
 			services.AddTransient<GameSessionViewModel>(s =>
 				new GameSessionViewModel(
 					s.GetRequiredService<IGameManager>(),
-					() => new NavigationService<MenuViewModel>(
+					new NavigationService<MenuViewModel>(
 						s.GetRequiredService<NavigationStore>(),
-						() => s.GetRequiredService<MenuViewModel>())
-						.Navigate())
+						() => s.GetRequiredService<MenuViewModel>()))
 			);
 
 			services.AddTransient<UsersViewModel>(s =>

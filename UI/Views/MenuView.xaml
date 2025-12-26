@@ -9,6 +9,25 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=vm:MenuViewModel}">
     <Grid Background="#FDFDFD">
+        
+        <Border
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="10"
+            Padding="8"
+            Background="#EEFFFFFF"
+            BorderBrush="#AA000000"
+            BorderThickness="1"
+            CornerRadius="6"
+            IsHitTestVisible="False"
+            Panel.ZIndex="100">
+
+            <TextBlock
+                Text="{Binding UserText}"
+                FontWeight="SemiBold"
+                Foreground="Black"/>
+        </Border>
+        
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="Menu" 
                     FontSize="36"
@@ -19,10 +38,12 @@
             <Button Content="Start game" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding StartGameCommand}"/>
-            <TextBlock Text="{Binding UserText}" />
             <Button Content="Change User" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ShowUserSelection}"/>
+            <Button Content="Show stats" 
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ShowSessionHistory}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -11,22 +11,23 @@ namespace NR155910155992.MemoGame.UI.Converters
 {
 	class BooleanToVisibilityConverter : IValueConverter
 	{
+		public bool Invert { get; set; }
+
 		object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is bool booleanValue)
+			bool res = value is bool b && b;
+			if(parameter is string p && bool.TryParse(p, out var invert))
 			{
-				return booleanValue ? Visibility.Visible : Visibility.Hidden;
+				res = invert ? !res : res;
 			}
-			return Visibility.Hidden;
+			else if (Invert)
+			{
+				res = !res;
+			}
+			return res ? Visibility.Visible : Visibility.Collapsed;
 		}
 
 		object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			if (value is Visibility visibilityValue)
-			{
-				return visibilityValue == Visibility.Visible;
-			}
-			return false;
-		}
+			=> throw new NotSupportedException();
 	}
 }

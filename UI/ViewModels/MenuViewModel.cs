@@ -22,7 +22,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			IGameManager gameManager, 
 			INavigationService gameNavigationService,
 			INavigationService sessionHistoryNavigationService,
-			INavigationService usersNavigationService)
+			INavigationService usersNavigationService
+		)
 		{
 			_gameManager = gameManager;
 			_gameNavigationService = gameNavigationService;

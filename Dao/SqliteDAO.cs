@@ -90,5 +90,19 @@ namespace NR155910155992.MemoGame.Dao
 
 			return playerGameResult;
 		}
-    }
+
+		public void DeleteUserProfile(IUserProfile userProfile)
+		{
+			var user = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
+			_db.UserProfiles.Remove(user);
+			_db.SaveChanges();
+		}
+
+		public void UpdateUserProfile(IUserProfile userProfile)
+		{
+			var user = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
+			_db.UserProfiles.Update(user);
+			_db.SaveChanges();
+		}
+	}
 }

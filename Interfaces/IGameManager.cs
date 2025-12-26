@@ -22,5 +22,7 @@ namespace NR155910155992.MemoGame.Interfaces
         public IEnumerable<IUserProfile> GetAllUserProfiles();
 		public void SetCurrentUserProfile(IUserProfile userProfile);
         public IUserProfile CreateNewUserProfile(string userName);
+        public void DeleteUserProfile(IUserProfile userProfile);
+        public void UpdateUserProfile(IUserProfile userProfile, string newUsername);
 	}
 }

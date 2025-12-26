@@ -34,5 +34,21 @@ namespace NR155910155992.MemoGame.BL
 			var newUser = _dao.CreateNewUserProfile(userName);
 			return newUser;
 		}
+
+		public void DeleteUserProfile(IUserProfile userProfile)
+		{
+			_dao.DeleteUserProfile(userProfile);
+			if (currentUserProfile == userProfile)
+			{
+				currentUserProfile = _dao.GetFirstUserProfile();
+			}
+		}
+
+		public void UpdateUserProfile(IUserProfile userProfile, string newUsername)
+		{
+			var updatedProfile = userProfile;
+			updatedProfile.UserName = newUsername.Trim();
+			_dao.UpdateUserProfile(updatedProfile);
+		}
 	}
 }

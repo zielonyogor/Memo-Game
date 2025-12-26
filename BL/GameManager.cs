@@ -19,14 +19,14 @@ namespace NR155910155992.MemoGame.BL
 		public event EventHandler<TimeSpan> TimeUpdated;
 
 		private System.Timers.Timer _timer;
-        public TimeSpan TimeElapsed { get; private set; }
+		public TimeSpan TimeElapsed { get; private set; }
 
-        private int _matchedPairsCount = 0;
+		private int _matchedPairsCount = 0;
 		private int _totalPairs;
 
 		private GameMode GameMode;//also propably should be kept somewhere seperate, maybe with size of a board or numbers of pairs, something like gameinfo
-        private GameType GameType;
-        private DateTime Date;
+		private GameType GameType;
+		private DateTime Date;
 
 		private UserProfileController userProfileController;
 
@@ -40,11 +40,11 @@ namespace NR155910155992.MemoGame.BL
 
 		public void StartNewGame(GameMode gameMode, GameType gameType)//maybe later as a return board from getrandomcardspositionedonboard
 		{
-			GameMode= gameMode;
-			GameType= gameType;
+			GameMode = gameMode;
+			GameType = gameType;
 			Date = DateTime.Now;
 
-            TimeElapsed = TimeSpan.Zero;
+			TimeElapsed = TimeSpan.Zero;
 			// Timer ticks every second
 			_timer = new System.Timers.Timer(1000);
 			_timer.Elapsed += TimerElapsed;
@@ -149,9 +149,9 @@ namespace NR155910155992.MemoGame.BL
 			GameFinished?.Invoke(this, EventArgs.Empty);
 		}
 
-        public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
-        {
-            return _dao.GetAllGameSessions();
+		public IEnumerable<IGameSession> GetAllGameSessions() //for game history screen
+		{
+			return _dao.GetAllGameSessions();
 		}
 
 		public IUserProfile? GetCurrentUserProfile()
@@ -172,6 +172,16 @@ namespace NR155910155992.MemoGame.BL
 		public IUserProfile CreateNewUserProfile(string userName)
 		{
 			return userProfileController.CreateNewUserProfile(userName);
+		}
+
+		public void DeleteUserProfile(IUserProfile userProfile)
+		{
+			userProfileController.DeleteUserProfile(userProfile);
+		}
+
+		public void UpdateUserProfile(IUserProfile userProfile, string newUsername)
+		{
+			userProfileController.UpdateUserProfile(userProfile, newUsername);
 		}
 	}
 }

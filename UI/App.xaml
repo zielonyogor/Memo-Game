@@ -13,6 +13,7 @@
 
             <converters:InvertedBoolConverter x:Key="InverseBoolConverter"/>
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityInvertedConverter" Invert="True"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

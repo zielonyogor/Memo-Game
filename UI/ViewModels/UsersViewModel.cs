@@ -11,7 +11,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		private readonly IGameManager _gameManager;
 		private readonly INavigationService _menuNavigationService;
 
-		public ObservableCollection<IUserProfile> Users { get; set; }
+		public ObservableCollection<UserItemViewModel> Users { get; }
 
 		private string _newUserName;
 		public string NewUserName {
@@ -28,24 +28,24 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			_gameManager = gameManager;
 			_menuNavigationService = menuNavigationService;
 
-			Users = new ObservableCollection<IUserProfile>(_gameManager.GetAllUserProfiles());
-			SelectUserCommand = new RelayCommand<IUserProfile>((user) => SelectUser(user));
+			Users = new ObservableCollection<UserItemViewModel>(
+				_gameManager.GetAllUserProfiles()
+					.Select(u => new UserItemViewModel(u, _gameManager, this))
+			);
+
 			AddUserCommand = new RelayCommand((_) => AddUser());
 			BackCommand = new RelayCommand((_) => Back());
-		}
-
-		private void SelectUser(IUserProfile user)
-		{
-			_gameManager.SetCurrentUserProfile(user);
-			Back();
 		}
 
 		private void AddUser()
 		{
 			if (string.IsNullOrWhiteSpace(NewUserName))
 				return;
+
 			var newUser = _gameManager.CreateNewUserProfile(NewUserName.Trim());
-			Users.Add(newUser);
+			var newUserItem = new UserItemViewModel(newUser, _gameManager, this);
+			Users.Add(newUserItem);
+
 			NewUserName = string.Empty;
 		}
 
@@ -53,5 +53,16 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		{
 			_menuNavigationService.Navigate();
 		}
+
+		public void RemoveUser(UserItemViewModel user)
+		{
+			Users.Remove(user);
+		}
+
+		public void BackToMenu()
+		{
+			_menuNavigationService.Navigate();
+		}
+
 	}
 }

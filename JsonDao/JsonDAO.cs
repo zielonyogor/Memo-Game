@@ -128,6 +128,22 @@ namespace NR155910155992.MemoGame.JsonDao
 			return _userProfiles;
 		}
 
+		public void DeleteUserProfile(IUserProfile userProfile)
+		{
+			_userProfiles.RemoveAll(up => up.Id == userProfile.Id);
+			SaveToFile(_userProfilesPath, _userProfiles);
+		}
+
+		public void UpdateUserProfile(IUserProfile userProfile)
+		{
+			var index = _userProfiles.FindIndex(up => up.Id == userProfile.Id);
+			if (index != -1)
+			{
+				_userProfiles[index] = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
+				SaveToFile(_userProfilesPath, _userProfiles);
+			}
+		}
+
 		private void LoadData()
 		{
 			_cards = LoadFromFile<Card>(_cardsPath);
