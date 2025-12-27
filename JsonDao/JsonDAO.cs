@@ -21,7 +21,7 @@ namespace NR155910155992.MemoGame.JsonDao
 		public JsonDAO()
 		{
 			_folder = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGame");
+				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGame/Data");
 
 			Directory.CreateDirectory(_folder);
 
@@ -150,6 +150,7 @@ namespace NR155910155992.MemoGame.JsonDao
 			_userProfiles = LoadFromFile<UserProfile>(_userProfilesPath);
 			_gameSessions = LoadFromFile<GameSession>(_gameSessionsPath);
 			_playerGameResults = LoadFromFile<PlayerGameResult>(_playerGameResultsPath);
+			HydrateReferences();
 		}
 
 		private void SeedData()
@@ -204,10 +205,44 @@ namespace NR155910155992.MemoGame.JsonDao
 				new PlayerGameResult { Id = 4, GameSessionId = 3, UserProfileId = 2, IsWinner = false, CardsUncovered = 7 }
 			};
 
+			foreach (var result in _playerGameResults)
+			{
+				result.User = _userProfiles.FirstOrDefault(u => u.Id == result.UserProfileId);
+				result.GameSession = _gameSessions.FirstOrDefault(gs => gs.Id == result.GameSessionId);
+				var session = _gameSessions.FirstOrDefault(gs => gs.Id == result.GameSessionId);
+				if (session != null)
+				{
+					session.PlayerResults.Add(result);
+				}
+			}
+
+			HydrateReferences();
+
 			SaveToFile(_cardsPath, _cards);
 			SaveToFile(_userProfilesPath, _userProfiles);
 			SaveToFile(_gameSessionsPath, _gameSessions);
 			SaveToFile(_playerGameResultsPath, _playerGameResults);
+		}
+
+		/// <summary>
+		/// Updates the references between PlayerGameResults, UserProfiles, and GameSessions after loading from JSON.
+		/// </summary>
+		private void HydrateReferences()
+		{
+			foreach (var result in _playerGameResults)
+			{
+				result.User = _userProfiles.FirstOrDefault(u => u.Id == result.UserProfileId);
+				var session = _gameSessions.FirstOrDefault(gs => gs.Id == result.GameSessionId);
+				result.GameSession = session;
+
+				if (session != null)
+				{
+					if (!session.PlayerResults.Any(pr => pr.Id == result.Id))
+					{
+						session.PlayerResults.Add(result);
+					}
+				}
+			}
 		}
 
 		private List<T> LoadFromFile<T>(string path)

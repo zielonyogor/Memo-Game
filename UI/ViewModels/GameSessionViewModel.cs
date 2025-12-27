@@ -2,29 +2,29 @@
 using NR155910155992.MemoGame.UI.Commands;
 using NR155910155992.MemoGame.UI.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Input;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
     public class GameSessionViewModel : ViewModelBase
     {
-        public IGameManager _gameManager;
-        public ICommand BackToMenu { get; }
+		private readonly IGameManager _gameManager;
 
-        public ObservableCollection<IGameSession> GameSessions { get; } = new();
-        public GameSessionViewModel(IGameManager gameManager, INavigationService backToMenuNavigationService)
-        {
-            _gameManager = gameManager;
-            BackToMenu = new RelayCommand((_) =>backToMenuNavigationService.Navigate());
+		public ICommand BackToMenu { get; }
 
-            var sessions = _gameManager.GetAllGameSessions();
-            foreach(var s in sessions)
-            {
-                GameSessions.Add(s);
-            }
-        }
+		public ObservableCollection<GameSessionItemViewModel> GameSessions { get; } = new();
 
-    }
+		public GameSessionViewModel(
+			IGameManager gameManager,
+			INavigationService backToMenuNavigationService)
+		{
+			_gameManager = gameManager;
+			BackToMenu = new RelayCommand(_ => backToMenuNavigationService.Navigate());
 
+			foreach (var session in _gameManager.GetAllGameSessions())
+			{
+				GameSessions.Add(new GameSessionItemViewModel(session));
+			}
+		}
+	}
 }

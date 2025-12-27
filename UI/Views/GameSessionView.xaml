@@ -18,20 +18,34 @@
             HorizontalAlignment="Left" Margin="5"
             Style="{StaticResource SecondaryButton}"
             Command="{Binding BackToMenu}"/>
+        
         <DataGrid Grid.Row="1"
-              ItemsSource="{Binding GameSessions}"
-              Style="{StaticResource PrimaryDataGrid}"
-              AutoGenerateColumns="False"
-              CanUserAddRows="False"
-              Margin="0,5,0,0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Date" Binding="{Binding GameDate}" />
-                    <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />
-                    <DataGridTextColumn Header="Game Type" Binding="{Binding GameType}" />
-                    <DataGridTextColumn Header="Game Mode" Binding="{Binding GameMode}" />
+                  ItemsSource="{Binding GameSessions}"
+                  Style="{StaticResource PrimaryDataGrid}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  Margin="0,5,0,0">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding DateFormatted}" Width="2*" />
+
+                <DataGridTextColumn Header="Duration" Binding="{Binding DurationFormatted}" Width="*" />
+                <DataGridTextColumn Header="Type" Binding="{Binding GameType}" Width="*" />
+                <DataGridTextColumn Header="Mode" Binding="{Binding GameMode}" Width="*" />
+                <DataGridTextColumn Header="Players" Binding="{Binding PlayerCount}" Width="*" />
+
+                <DataGridTextColumn Header="Names" Binding="{Binding PlayerNames}" Width="3*" />
+
+                <DataGridTextColumn Header="Winner" Binding="{Binding Winner}" Width="2*" />
+
+                <DataGridTextColumn Header="Cards" Binding="{Binding TotalCardsUncovered}" Width="*" />
             </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
+
+        </DataGrid>
+
+    </Grid>
 
 </UserControl>
 
