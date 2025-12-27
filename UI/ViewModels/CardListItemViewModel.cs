@@ -1,24 +1,27 @@
-﻿using NR155910155992.MemoGame.Interfaces;
+﻿using NR155910155992.MemoGame.Core;
+using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.Commands;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
-	class UserItemViewModel : ViewModelBase
-	{
+    class CardListItemViewModel : ViewModelBase
+    {
 		private readonly IGameManager _gameManager;
-		private readonly UsersViewModel _parent;
+		private readonly CardListViewModel _parent;
 
-		public IUserProfile User { get; }
+		private ICard Card { get; }
 
-		public string UserName {
-			get => User.UserName;
+        public string ImagePath => ImageUtility.ResolvePath(Card.ImagePath);
+		public string Name {
+			get => Card.Name;
 			set
 			{
-				if (User.UserName != value)
+				if (Card.Name != value)
 				{
-					User.UserName = value;
+					Card.Name = value;
 					OnPropertyChanged();
 				}
 			}
@@ -36,57 +39,50 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			set { _editedName = value; OnPropertyChanged(); }
 		}
 
-		public ICommand SelectCommand { get; }
 		public ICommand DeleteCommand { get; }
 		public ICommand StartEditCommand { get; }
 		public ICommand ConfirmEditCommand { get; }
 		public ICommand CancelEditCommand { get; }
 
-		public UserItemViewModel(
-			IUserProfile user,
-			IGameManager gameManager,
-			UsersViewModel parent)
-		{
-			User = user;
-			_gameManager = gameManager;
-			_parent = parent;
+		public CardListItemViewModel(IGameManager gameManager, ICard card, CardListViewModel parent)
+        {
+            _gameManager = gameManager;
+            _parent = parent;
+            Card = card;
 
 			IsEditing = false;
-			EditedName = user.UserName;
+			EditedName = card.Name;
 
-			SelectCommand = new RelayCommand(_ => Select());
 			DeleteCommand = new RelayCommand(_ => Delete());
 			StartEditCommand = new RelayCommand(_ => StartEdit());
 			ConfirmEditCommand = new RelayCommand(_ => ConfirmEdit());
 			CancelEditCommand = new RelayCommand(_ => CancelEdit());
 		}
 
-		private void Select()
-		{
-			_gameManager.SetCurrentUserProfile(User);
-			_parent.Back();
-		}
-
 		private void Delete()
 		{
-			_gameManager.DeleteUserProfile(User);
-			_parent.RemoveUser(this);
+			var result = MessageBox.Show($"Are you sure you want to delete '{Card.Name}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+			if (result == MessageBoxResult.Yes)
+			{
+				_gameManager.DeleteCard(Card);
+				_parent.RemoveCard(this);
+			}
 		}
 
 		private void StartEdit()
 		{
-			EditedName = UserName;
+			EditedName = Name;
 			IsEditing = true;
-			Debug.WriteLine("Started editing");
+			Debug.WriteLine("Started editing card name");
 		}
 
 		private void ConfirmEdit()
 		{
 			if (!string.IsNullOrWhiteSpace(EditedName))
-				UserName = EditedName.Trim();
+				Name = EditedName.Trim();
 
 			IsEditing = false;
-			_gameManager.UpdateUserProfile(User, EditedName.Trim());
+			_gameManager.UpdateCardName(Card, EditedName.Trim());
 		}
 
 		private void CancelEdit()
@@ -94,5 +90,4 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			IsEditing = false;
 		}
 	}
-
 }

@@ -3,10 +3,8 @@ using NR155910155992.MemoGame.UI.Commands;
 using NR155910155992.MemoGame.UI.Models;
 using NR155910155992.MemoGame.UI.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
@@ -25,7 +23,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
         private TimeSpan timeElapsed;
         public string ElapsedTimeString => timeElapsed.ToString(@"mm\:ss");
 
-		public ICommand BackCommand { get; }
+		public ICommand BackToMenu { get; }
 		public Action GoBackToMainMenuAction;
 
         public GameViewModel(IGameManager gameManager, INavigationService menuNavigationService, IParameterNavigationService<GameResult> gameFinishedNavigationService)
@@ -34,7 +32,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			_menuNavigationService = menuNavigationService;
 			_gameFinishedNavigationService = gameFinishedNavigationService;
 
-			BackCommand = new RelayCommand((_) => Back());
+			BackToMenu = new RelayCommand((_) => Back());
 
 			SetupCards();
 			_gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);

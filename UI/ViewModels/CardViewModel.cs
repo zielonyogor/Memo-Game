@@ -1,4 +1,5 @@
-﻿using NR155910155992.MemoGame.Interfaces;
+﻿using NR155910155992.MemoGame.Core;
+using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.Commands;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -26,8 +27,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		}
 
 		public int Id => _card.Id;
-		public string ImageSource => ResolvePath(_card.ImagePath);
-		public string BackSideImage => ResolvePath("Assets/Cards/card_backside.png");
+		public string ImageSource => ImageUtility.ResolvePath(_card.ImagePath);
+		public string BackSideImage => ImageUtility.ResolvePath("Assets/Cards/card_backside.png");
         public string? CurrentSideImage => IsRevealed || IsMatched ? ImageSource : BackSideImage;
 
 		public ICommand ClickCommand { get; }
@@ -66,15 +67,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				return;
             IsRevealed = true;
             _gameManager.OnCardClicked(Id);
-		}
-
-
-		private string ResolvePath(string path)
-		{
-			if (System.IO.Path.IsPathRooted(path))
-				return path;
-
-			return System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
 		}
 	}
 }

@@ -17,12 +17,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public ICommand StartGameCommand { get; }
 		public ICommand ShowUserSelection { get; }
 		public ICommand ShowSessionHistory { get; }
+		public ICommand ShowCardLibrary { get; }
 
-        public MenuViewModel(
+		public MenuViewModel(
 			IGameManager gameManager, 
 			INavigationService gameNavigationService,
 			INavigationService sessionHistoryNavigationService,
-			INavigationService usersNavigationService
+			INavigationService usersNavigationService,
+			INavigationService cardsNavigationService
 		)
 		{
 			_gameManager = gameManager;
@@ -33,6 +35,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			StartGameCommand = new RelayCommand((_) => startGameNavigation());
 			ShowSessionHistory = new RelayCommand((_) => startShowingSessions());
 			ShowUserSelection = new RelayCommand((_) => showUserSelection());
+			ShowCardLibrary = new RelayCommand((_) => cardsNavigationService.Navigate());
 		}
 
 		private void startGameNavigation()

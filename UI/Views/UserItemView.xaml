@@ -36,30 +36,30 @@
 
             <Button Grid.Column="1"
                     Content="Select"
-                    Margin="6,0"
+                    Style="{StaticResource ItemButton}"
                     Command="{Binding SelectCommand}"
                     Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityInvertedConverter}}"/>
 
             <Grid Grid.Column="2">
                 <Button Content="Edit"
-                        Margin="6,0"
+                    Style="{StaticResource ItemButton}"
                         Command="{Binding StartEditCommand}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityInvertedConverter}}"/>
 
                 <Button Content="Save"
-                        Margin="6,0"
+                    Style="{StaticResource ItemButton}"
                         Command="{Binding ConfirmEditCommand}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </Grid>
 
             <Grid Grid.Column="3">
                 <Button Content="Delete"
-                        Margin="6,0"
+                    Style="{StaticResource ItemButton}"
                         Command="{Binding DeleteCommand}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityInvertedConverter}}"/>
 
                 <Button Content="Cancel"
-                        Margin="6,0"
+                        Style="{StaticResource ItemButton}"
                         Command="{Binding CancelEditCommand}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>

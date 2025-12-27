@@ -11,10 +11,12 @@ namespace NR155910155992.MemoGame.JsonDao.Models
 		public bool IsWinner { get; set; }
 
 		public int UserProfileId { get; set; }
+
 		[JsonIgnore]
 		public UserProfile User { get; set; }
 
 		public int GameSessionId { get; set; }
+
 		[JsonIgnore]
 		public GameSession GameSession { get; set; }
 

@@ -67,19 +67,32 @@ namespace NR155910155992.MemoGame.JsonDao
 
 		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users)
 		{
+			int gameSessionId = Guid.NewGuid().GetHashCode();
 			var gameSession = new GameSession
 			{
-				Id = Guid.NewGuid().GetHashCode(),
+				Id = gameSessionId,
 				GameDate = date,
 				Duration = duration,
 				GameType = gameType,
 				GameMode = gameMode,
 			};
+			var playerResults = users.Select(user => new PlayerGameResult()
+				{
+					Id = Guid.NewGuid().GetHashCode(),
+					CardsUncovered = 0,
+					IsWinner = false,
+					User = user as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(user)),
+					UserProfileId = user.Id,
+					GameSession = gameSession,
+					GameSessionId = gameSessionId
+			}
+			).ToList();
 
-            Debug.WriteLine($"Before adding number of game sessions in dao list: {_gameSessions.Count()}");
+
             _gameSessions.Add(gameSession);
-			Debug.WriteLine($"Created GameSession with Id: {gameSession.Id}, number of game sessions in dao list: {_gameSessions.Count()}");
             SaveToFile(_gameSessionsPath, _gameSessions);
+			_playerGameResults.AddRange(playerResults);
+			SaveToFile(_playerGameResultsPath, _playerGameResults);
 
 			return gameSession;
 		}
@@ -141,6 +154,22 @@ namespace NR155910155992.MemoGame.JsonDao
 			{
 				_userProfiles[index] = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
 				SaveToFile(_userProfilesPath, _userProfiles);
+			}
+		}
+
+		public void DeleteCard(ICard card)
+		{
+			_cards.RemoveAll(c => c.Id == card.Id);
+			SaveToFile(_cardsPath, _cards);
+		}
+
+		public void UpdateCardName(ICard card, string newName)
+		{
+			var index = _cards.FindIndex(c => c.Id == card.Id);
+			if (index != -1)
+			{
+				_cards[index].Name = newName;
+				SaveToFile(_cardsPath, _cards);
 			}
 		}
 

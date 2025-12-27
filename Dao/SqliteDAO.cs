@@ -68,14 +68,6 @@ namespace NR155910155992.MemoGame.Dao
 			return userProfile;
 		}
 
-		public ICard CreateNewCard(string imagePath, string name)
-		{
-			var card = new Card { Name = name, ImagePath = imagePath };
-			_db.Cards.Add(card);
-			_db.SaveChanges();
-
-			return card;
-		}
 
         public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner)
 		{
@@ -91,6 +83,8 @@ namespace NR155910155992.MemoGame.Dao
 			return playerGameResult;
 		}
 
+		// User
+
 		public void DeleteUserProfile(IUserProfile userProfile)
 		{
 			var user = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
@@ -102,6 +96,31 @@ namespace NR155910155992.MemoGame.Dao
 		{
 			var user = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
 			_db.UserProfiles.Update(user);
+			_db.SaveChanges();
+		}
+
+		// Cards
+		public ICard CreateNewCard(string imagePath, string name)
+		{
+			var card = new Card { Name = name, ImagePath = imagePath };
+			_db.Cards.Add(card);
+			_db.SaveChanges();
+
+			return card;
+		}
+
+		public void UpdateCardName(ICard card, string newName)
+		{
+			var dbCard = card as Card ?? throw new ArgumentException("card must be of type Card", nameof(card));
+			dbCard.Name = newName;
+			_db.Cards.Update(dbCard);
+			_db.SaveChanges();
+		}
+
+		public void DeleteCard(ICard card)
+		{
+			var dbCard = card as Card ?? throw new ArgumentException("card must be of type Card", nameof(card));
+			_db.Cards.Remove(dbCard);
 			_db.SaveChanges();
 		}
 	}

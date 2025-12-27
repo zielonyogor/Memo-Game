@@ -60,11 +60,7 @@ namespace NR155910155992.MemoGame.UI
 			services.AddTransient<GameViewModel>(s =>
 				new GameViewModel(
 					s.GetRequiredService<IGameManager>(),
-
-					new NavigationService<MenuViewModel>(
-						s.GetRequiredService<NavigationStore>(),
-						() => s.GetRequiredService<MenuViewModel>()),
-
+					CreateBackToMenuNavidationService(s),
 					s.GetRequiredService<IParameterNavigationService<GameResult>>()
 				)
 			);
@@ -72,17 +68,22 @@ namespace NR155910155992.MemoGame.UI
 			services.AddTransient<GameSessionViewModel>(s =>
 				new GameSessionViewModel(
 					s.GetRequiredService<IGameManager>(),
-					new NavigationService<MenuViewModel>(
-						s.GetRequiredService<NavigationStore>(),
-						() => s.GetRequiredService<MenuViewModel>()))
+					CreateBackToMenuNavidationService(s)
+				)
 			);
 
 			services.AddTransient<UsersViewModel>(s =>
 				new UsersViewModel(
 					s.GetRequiredService<IGameManager>(),
-					new NavigationService<MenuViewModel>(
-						s.GetRequiredService<NavigationStore>(),
-						() => s.GetRequiredService<MenuViewModel>()))
+					CreateBackToMenuNavidationService(s)
+					)
+			);
+
+			services.AddTransient<CardListViewModel>(s =>
+				new CardListViewModel(
+					s.GetRequiredService<IGameManager>(),
+					CreateBackToMenuNavidationService(s)
+				)
 			);
 
 			services.AddSingleton<MainWindow>();
@@ -109,7 +110,8 @@ namespace NR155910155992.MemoGame.UI
 				s.GetRequiredService<IGameManager>(),
 				new NavigationService<GameViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<GameViewModel>()),
 				new NavigationService<GameSessionViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<GameSessionViewModel>()),
-				new NavigationService<UsersViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<UsersViewModel>())
+				new NavigationService<UsersViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<UsersViewModel>()),
+				new NavigationService<CardListViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<CardListViewModel>())
 			);
 		}
 
@@ -123,6 +125,13 @@ namespace NR155910155992.MemoGame.UI
 					s.GetRequiredService<NavigationStore>(),
 					() => s.GetRequiredService<MenuViewModel>())
 			);
+		}
+
+		private NavigationService<MenuViewModel> CreateBackToMenuNavidationService(IServiceProvider s)
+		{
+			return new NavigationService<MenuViewModel>(
+				s.GetRequiredService<NavigationStore>(),
+				() => s.GetRequiredService<MenuViewModel>());
 		}
 	}
 }

@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NR155910155992.MemoGame.UI"
         mc:Ignorable="d"
-        Title="Memory Game" Height="500" Width="800">
+        Title="Memory Game" Height="520" Width="840">
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:GameViewModel}">
@@ -27,7 +27,11 @@
         <DataTemplate DataType="{x:Type vm:UsersViewModel}">
             <views:UsersView />
         </DataTemplate>
-        
+
+        <DataTemplate DataType="{x:Type vm:CardListViewModel}">
+            <views:CardListView />
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type vm:GameFinishedViewModel}">
             <views:GameFinishedView />
         </DataTemplate>

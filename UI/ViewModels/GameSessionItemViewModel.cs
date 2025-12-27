@@ -16,7 +16,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public GameSessionItemViewModel(IGameSession session)
 		{
 			_session = session;
-			Debug.WriteLine($"Got session: {session.Id}");
 		}
 
 		public DateTime GameDate => _session.GameDate;

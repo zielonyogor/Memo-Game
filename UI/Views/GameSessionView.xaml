@@ -14,11 +14,12 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Content="Back to Main Menu"
-            HorizontalAlignment="Left" Margin="5"
-            Style="{StaticResource SecondaryButton}"
-            Command="{Binding BackToMenu}"/>
-        
+
+        <HeaderedContentControl Grid.Row="0" 
+                        Style="{StaticResource NavBarStyle}"
+                        Header="Game History">
+        </HeaderedContentControl>
+
         <DataGrid Grid.Row="1"
                   ItemsSource="{Binding GameSessions}"
                   Style="{StaticResource PrimaryDataGrid}"

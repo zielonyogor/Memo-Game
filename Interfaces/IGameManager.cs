@@ -6,6 +6,7 @@ namespace NR155910155992.MemoGame.Interfaces
 	{
 		public bool IsShowingChoosenCards { get;}
         public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards);
+        public int GetCardsCount();
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int columns); //different for different game modes
         public void StartNewGame(GameMode gameMode, GameType gameType);
         public IEnumerable<IGameSession> GetAllGameSessions(); //for game history screen
@@ -22,5 +23,10 @@ namespace NR155910155992.MemoGame.Interfaces
         public IUserProfile CreateNewUserProfile(string userName);
         public void DeleteUserProfile(IUserProfile userProfile);
         public void UpdateUserProfile(IUserProfile userProfile, string newUsername);
+
+        public IEnumerable<ICard> GetAllCards();
+        public ICard CreateNewCard(string imagePath, string name);
+        public void DeleteCard(ICard card);
+        public void UpdateCardName(ICard card, string newName);
 	}
 }

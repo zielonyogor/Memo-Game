@@ -13,16 +13,12 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Content="Back to Main Menu"
-                Grid.Row="0"
-                HorizontalAlignment="Left" Margin="5"
-                Style="{StaticResource SecondaryButton}"
-                Command="{Binding BackCommand}"/>
-        <TextBlock Text="{Binding ElapsedTimeString}"
-           FontSize="20"
-           FontWeight="Bold"
-           HorizontalAlignment="Right"
-           Margin="10"/>
+
+        <HeaderedContentControl Grid.Row="0" 
+                        Style="{StaticResource NavBarStyle}"
+                        Header="{Binding ElapsedTimeString}">
+        </HeaderedContentControl>
+
         <Grid Grid.Row="1">
             <ItemsControl ItemsSource="{Binding Cards}" Margin="20">
                 <ItemsControl.ItemsPanel>

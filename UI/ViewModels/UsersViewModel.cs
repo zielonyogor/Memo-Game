@@ -21,7 +21,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ICommand SelectUserCommand { get; }
 		public ICommand AddUserCommand { get; }
-		public ICommand BackCommand { get; }
+		public ICommand BackToMenu { get; }
 
 		public UsersViewModel(IGameManager gameManager, INavigationService menuNavigationService)
 		{
@@ -34,7 +34,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			);
 
 			AddUserCommand = new RelayCommand((_) => AddUser());
-			BackCommand = new RelayCommand((_) => Back());
+			BackToMenu = new RelayCommand((_) => Back());
 		}
 
 		private void AddUser()
@@ -49,7 +49,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			NewUserName = string.Empty;
 		}
 
-		private void Back()
+		public void Back()
 		{
 			_menuNavigationService.Navigate();
 		}
@@ -58,11 +58,5 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		{
 			Users.Remove(user);
 		}
-
-		public void BackToMenu()
-		{
-			_menuNavigationService.Navigate();
-		}
-
 	}
 }

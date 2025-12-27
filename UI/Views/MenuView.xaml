@@ -41,6 +41,9 @@
             <Button Content="Change User" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ShowUserSelection}"/>
+            <Button Content="Cards" 
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ShowCardLibrary}"/>
             <Button Content="Show stats" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ShowSessionHistory}"/>

@@ -11,6 +11,7 @@ namespace NR155910155992.MemoGame.BL
 		private readonly GameBoard _gameBoard;
 		private readonly GameHistoryManager _historyManager;
 		private readonly GameSessionManager _sessionManager;
+		private readonly CardManager _cardManager;
 
 		public event EventHandler<int>? CardsMatched;
 		public event EventHandler? CardsMismatched;
@@ -28,6 +29,7 @@ namespace NR155910155992.MemoGame.BL
 			_gameBoard = new GameBoard(_dao);
 			_historyManager = new GameHistoryManager(_dao);
 			_sessionManager = new GameSessionManager(_dao);
+			_cardManager = new CardManager(_dao);
 
 			_sessionManager.TimeUpdated += (s, e) => TimeUpdated?.Invoke(this, e);
 			_sessionManager.CardMatched += (s, id) => CardsMatched?.Invoke(this, id);
@@ -63,6 +65,7 @@ namespace NR155910155992.MemoGame.BL
 		}
 
 		public IEnumerable<ICard> GetRandomSetOfCards(int count) => _gameBoard.GetRandomSetOfCards(count);
+		public int GetCardsCount() => _gameBoard.GetTotalCardsCount();
 		public IEnumerable<IGameSession> GetAllGameSessions() => _historyManager.GetAllGameSessions();
 
 		public IUserProfile? GetCurrentUserProfile() => _userController.GetCurrentUserProfile();
@@ -71,5 +74,10 @@ namespace NR155910155992.MemoGame.BL
 		public IUserProfile CreateNewUserProfile(string name) => _userController.CreateNewUserProfile(name);
 		public void DeleteUserProfile(IUserProfile profile) => _userController.DeleteUserProfile(profile);
 		public void UpdateUserProfile(IUserProfile profile, string name) => _userController.UpdateUserProfile(profile, name);
+
+		public IEnumerable<ICard> GetAllCards() => _cardManager.GetAllCards();
+		public ICard CreateNewCard(string imagePath, string name) => _cardManager.CreateNewCard(imagePath, name);
+		public void DeleteCard(ICard card) => _cardManager.DeleteCard(card);
+		public void UpdateCardName(ICard card, string newName) => _cardManager.UpdateCardName(card, newName);
 	}
 }

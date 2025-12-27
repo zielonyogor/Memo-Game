@@ -14,14 +14,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0"
-            Background="#F3E5F5"
-            Padding="4">
-            <Button Content="Back to Menu"
-                Style="{StaticResource SecondaryButton}"
-                Command="{Binding BackCommand}"
-                HorizontalAlignment="Left"/>
-        </Border>
+        <HeaderedContentControl Grid.Row="0" 
+                        Style="{StaticResource NavBarStyle}"
+                        Header="Users">
+        </HeaderedContentControl>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -36,21 +32,13 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                       Text="Users"
-                       FontSize="36"
-                       FontWeight="ExtraBold"
-                       Margin="0,20"
-                       HorizontalAlignment="Center"/>
-
-                <StackPanel Grid.Row="1"
+                <StackPanel Grid.Row="0"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        Margin="0,0,0,15">
+                        Margin="0,15,0,15">
                     <TextBox Width="230"
                          Height="32"
                          VerticalContentAlignment="Center"
@@ -61,16 +49,16 @@
                         Command="{Binding AddUserCommand}" />
                 </StackPanel>
 
-                <ListBox Grid.Row="2"
+                <ListBox Grid.Row="1"
                      ItemsSource="{Binding Users}"
-                     HorizontalContentAlignment="Stretch">
-
+                     HorizontalContentAlignment="Stretch"
+                     Background="#F3E5F5">
+                    
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type vm:UserItemViewModel}">
                             <local:UserItemView />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-
                 </ListBox>
             </Grid>
         </Grid>

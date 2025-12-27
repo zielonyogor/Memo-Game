@@ -27,6 +27,11 @@ namespace NR155910155992.MemoGame.BL
 			return randomCards;
 		}
 
+		public int GetTotalCardsCount()
+		{
+			return _dao.GetAllCards().Count();
+		}
+
 		public ICard[,] GenerateBoard(int rows, int cols)
 		{
 			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
