@@ -10,10 +10,9 @@
         Title="Memory Game" Height="520" Width="840">
 
     <Window.Resources>
+
         <DataTemplate DataType="{x:Type vm:GameViewModel}">
-            <Grid>
-                <views:GameView Grid.Row="1"/>
-            </Grid>
+            <views:GameView />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type vm:MenuViewModel}">
@@ -35,6 +34,10 @@
         <DataTemplate DataType="{x:Type vm:GameFinishedViewModel}">
             <views:GameFinishedView />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:GameSettingsViewModel}">
+            <views:GameSettingsView />
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <!-- Main content -->
@@ -42,10 +45,16 @@
             Content="{Binding CurrentViewModel}" />
 
         <!-- Modal overlay -->
-        <ContentControl
-            Content="{Binding CurrentModalViewModel}"
-            Background="#80000000"
-            Visibility="{Binding IsModalOpen,
-                         Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Grid
+        Visibility="{Binding IsModalOpen,
+                     Converter={StaticResource BooleanToVisibilityConverter}}">
+
+            <Border Background="#40F42614" />
+
+            <ContentControl
+                Content="{Binding CurrentModalViewModel}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </Window>

@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace NR155910155992.MemoGame.UI.Services
 {
 	public class ParameterModalNavigationService<TParameter, TViewModel>
-	: IParameterNavigationService<TParameter>
-	where TViewModel : ViewModelBase
+		: IParameterNavigationService<TParameter>
+		where TViewModel : ViewModelBase
 	{
 		private readonly ModalNavigationStore _modalNavigationStore;
 		private readonly Func<TParameter, TViewModel> _createViewModel;

@@ -57,8 +57,20 @@ namespace NR155910155992.MemoGame.UI
 
 			services.AddTransient<MenuViewModel>(CreateMenuViewModel);
 
-			services.AddTransient<GameViewModel>(s =>
-				new GameViewModel(
+			services.AddTransient<GameSettingsViewModel>(s =>
+				new GameSettingsViewModel(
+					s.GetRequiredService<IGameManager>(),
+					new ParameterNavigationService<GameSettings, GameViewModel>(
+						s.GetRequiredService<NavigationStore>(),
+						s.GetRequiredService<Func<GameSettings, GameViewModel>>()
+					),
+					new CloseModalNavigationService(s.GetRequiredService<ModalNavigationStore>())
+				)
+			);
+
+			services.AddSingleton<Func<GameSettings, GameViewModel>>(s =>
+				settings => new GameViewModel(
+					settings,
 					s.GetRequiredService<IGameManager>(),
 					CreateBackToMenuNavidationService(s),
 					s.GetRequiredService<IParameterNavigationService<GameResult>>()
@@ -108,7 +120,7 @@ namespace NR155910155992.MemoGame.UI
 		{
 			return new MenuViewModel(
 				s.GetRequiredService<IGameManager>(),
-				new NavigationService<GameViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<GameViewModel>()),
+				new ModalNavigationService<GameSettingsViewModel>(s.GetRequiredService<ModalNavigationStore>(), () => s.GetRequiredService<GameSettingsViewModel>()),
 				new NavigationService<GameSessionViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<GameSessionViewModel>()),
 				new NavigationService<UsersViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<UsersViewModel>()),
 				new NavigationService<CardListViewModel>(s.GetRequiredService<NavigationStore>(), () => s.GetRequiredService<CardListViewModel>())
@@ -119,11 +131,13 @@ namespace NR155910155992.MemoGame.UI
 		{
 			return new CloseModalAndNavigateService(
 				new CloseModalNavigationService(
-					s.GetRequiredService<ModalNavigationStore>()),
+					s.GetRequiredService<ModalNavigationStore>()
+				),
 
 				new NavigationService<MenuViewModel>(
 					s.GetRequiredService<NavigationStore>(),
-					() => s.GetRequiredService<MenuViewModel>())
+					() => s.GetRequiredService<MenuViewModel>()
+				)
 			);
 		}
 

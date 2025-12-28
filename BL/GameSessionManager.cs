@@ -20,7 +20,7 @@ namespace NR155910155992.MemoGame.BL
 		private int _matchedPairsCount = 0;
 		private int _totalPairs;
 		private int? _firstRevealedCardId = null;
-		private bool _isProcessingMismatch = false;
+		private bool _isProcessingMismatch = false; // probably should move this logic to UI layer
 
 		// Events
 		public event EventHandler<TimeSpan>? TimeUpdated;
@@ -56,18 +56,15 @@ namespace NR155910155992.MemoGame.BL
 
 		public async Task ProcessCardClick(int clickedCardId)
 		{
-			// Ignore clicks if we are waiting for a mismatch animation or if game is done
 			if (_isProcessingMismatch)
 				return;
 
-			// 1. First Card Logic
 			if (_firstRevealedCardId == null)
 			{
 				_firstRevealedCardId = clickedCardId;
 				return;
 			}
 
-			// 2. Second Card Logic (Match Check)
 			if (_firstRevealedCardId == clickedCardId)
 			{
 				// MATCH
@@ -75,27 +72,25 @@ namespace NR155910155992.MemoGame.BL
 				CardMatched?.Invoke(this, clickedCardId);
 				Debug.WriteLine($"Matched: {clickedCardId}");
 
-				_firstRevealedCardId = null; // Reset for next pair
+				_firstRevealedCardId = null;
 
-				// Win Condition
 				if (_matchedPairsCount >= _totalPairs)
 				{
-					_timer.Stop(); // Stop timer immediately
+					_timer.Stop();
 					GameFinished?.Invoke(this, EventArgs.Empty);
 				}
 			}
 			else
 			{
 				// MISMATCH
-				_isProcessingMismatch = true; // Lock input
+				_isProcessingMismatch = true;
 				Debug.WriteLine($"No match: {_firstRevealedCardId} vs {clickedCardId}");
 
-				// Wait for user to see the cards (UI logic requires delay)
 				await Task.Delay(1000);
 
 				CardMismatched?.Invoke(this, EventArgs.Empty);
 
-				_isProcessingMismatch = false; // Unlock input
+				_isProcessingMismatch = false;
 				_firstRevealedCardId = null;
 			}
 		}
@@ -103,7 +98,7 @@ namespace NR155910155992.MemoGame.BL
 		public void SaveSession(IEnumerable<IUserProfile> users)
 		{
 			_timer.Stop();
-			_dao.CreateGameSession(_date, TimeElapsed, _gameType, _gameMode, users: users);
+			_dao.CreateGameSession(_date, TimeElapsed, _gameType, _gameMode, users: users, _totalPairs * 2);
 		}
 
 		private void TimerElapsed(object? sender, ElapsedEventArgs e)

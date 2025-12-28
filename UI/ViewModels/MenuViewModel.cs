@@ -21,14 +21,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public MenuViewModel(
 			IGameManager gameManager, 
-			INavigationService gameNavigationService,
+			INavigationService gameSettingsNavigationService,
 			INavigationService sessionHistoryNavigationService,
 			INavigationService usersNavigationService,
 			INavigationService cardsNavigationService
 		)
 		{
 			_gameManager = gameManager;
-			_gameNavigationService = gameNavigationService;
+			_gameNavigationService = gameSettingsNavigationService;
 			_sessionHistoryNavigationService = sessionHistoryNavigationService;
 			_usersNavigationService = usersNavigationService;
 

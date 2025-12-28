@@ -9,7 +9,7 @@ namespace NR155910155992.MemoGame.Interfaces
         public int GetCardsCount();
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int columns); //different for different game modes
         public void StartNewGame(GameMode gameMode, GameType gameType);
-        public IEnumerable<IGameSession> GetAllGameSessions(); //for game history screen
+        public IEnumerable<IGameSession> GetAllGameSessionsForCurrentUser(); //for game history screen
 
         public Task OnCardClicked(int clickedCardId);
         public event EventHandler<int> CardsMatched;

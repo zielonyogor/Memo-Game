@@ -16,18 +16,22 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ObservableCollection<CardViewModel> Cards { get; set; }
 
-		// TODO: Move to a struct (and later make possible to edit)
-		public int Rows { get; private set; } = 2;
-		public int Columns { get; private set; } = 2;
-
         private TimeSpan timeElapsed;
         public string ElapsedTimeString => timeElapsed.ToString(@"mm\:ss");
 
 		public ICommand BackToMenu { get; }
 		public Action GoBackToMainMenuAction;
 
-        public GameViewModel(IGameManager gameManager, INavigationService menuNavigationService, IParameterNavigationService<GameResult> gameFinishedNavigationService)
+		private readonly GameSettings _gameSettings;
+
+        public GameViewModel(
+			GameSettings gameSettings,
+			IGameManager gameManager, 
+			INavigationService menuNavigationService, 
+			IParameterNavigationService<GameResult> gameFinishedNavigationService
+		)
 		{
+			_gameSettings = gameSettings;
 			_gameManager = gameManager;
 			_menuNavigationService = menuNavigationService;
 			_gameFinishedNavigationService = gameFinishedNavigationService;
@@ -40,7 +44,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			{
 				_gameFinishedNavigationService.Navigate(
 					new GameResult(
-						Rows * Columns / 2,
+						_gameSettings.Rows * _gameSettings.Columns / 2,
 						timeElapsed));
 			};
 
@@ -56,11 +60,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
         private void SetupCards()
 		{
-            ICard [,] cards = _gameManager.GetRandomCardsPositionedOnBoard(Rows, Columns); 
+            ICard [,] cards = _gameManager.GetRandomCardsPositionedOnBoard(_gameSettings.Rows, _gameSettings.Columns); 
             Cards = new ObservableCollection<CardViewModel>(); 
-			for( int r = 0; r < Rows; r++)
+			for( int r = 0; r < _gameSettings.Rows; r++)
             {
-				for (int c = 0; c < Columns; c++) {
+				for (int c = 0; c < _gameSettings.Columns; c++) {
 					ICard card = cards[r,c];
                     if ( card != null)
 					{

@@ -15,9 +15,9 @@ namespace NR155910155992.MemoGame.BL
 		{
 			_dao = dao;
 		}
-		public IEnumerable<IGameSession> GetAllGameSessions()
+		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile)
 		{
-			return _dao.GetAllGameSessions();
+			return _dao.GetAllGameSessionsForUser(userProfile);
 		}
 	}
 }

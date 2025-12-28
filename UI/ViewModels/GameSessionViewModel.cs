@@ -21,7 +21,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			_gameManager = gameManager;
 			BackToMenu = new RelayCommand(_ => backToMenuNavigationService.Navigate());
 
-			foreach (var session in _gameManager.GetAllGameSessions())
+			foreach (var session in _gameManager.GetAllGameSessionsForCurrentUser())
 			{
 				GameSessions.Add(new GameSessionItemViewModel(session));
 			}

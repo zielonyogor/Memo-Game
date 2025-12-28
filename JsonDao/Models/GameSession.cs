@@ -11,7 +11,9 @@ namespace NR155910155992.MemoGame.JsonDao.Models
 		public GameType GameType { get; set; }
 		public GameMode GameMode { get; set; }
 
-		public ICollection<PlayerGameResult> PlayerResults { get; private set; } = new List<PlayerGameResult>();
-		IEnumerable<IPlayerGameResult> IGameSession.PlayerResults => PlayerResults;
+		public List<PlayerGameResult> PlayerResultsConcrete { get; set; } = new List<PlayerGameResult>();
+
+		[System.Text.Json.Serialization.JsonIgnore]
+		public IEnumerable<IPlayerGameResult> PlayerResults => PlayerResultsConcrete;
 	}
 }

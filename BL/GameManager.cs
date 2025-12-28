@@ -45,7 +45,6 @@ namespace NR155910155992.MemoGame.BL
 		public void StartNewGame(GameMode gameMode, GameType gameType)
 		{
 			int totalPairs = _gameBoard.TotalPairs;
-
 			if (totalPairs == 0)
 				throw new InvalidOperationException("Board not generated yet.");
 
@@ -66,8 +65,9 @@ namespace NR155910155992.MemoGame.BL
 
 		public IEnumerable<ICard> GetRandomSetOfCards(int count) => _gameBoard.GetRandomSetOfCards(count);
 		public int GetCardsCount() => _gameBoard.GetTotalCardsCount();
-		public IEnumerable<IGameSession> GetAllGameSessions() => _historyManager.GetAllGameSessions();
+		public IEnumerable<IGameSession> GetAllGameSessionsForCurrentUser() => _historyManager.GetAllGameSessionsForUser(_userController.GetCurrentUserProfile());
 
+		// User profile management
 		public IUserProfile? GetCurrentUserProfile() => _userController.GetCurrentUserProfile();
 		public void SetCurrentUserProfile(IUserProfile profile) => _userController.SetCurrentUserProfile(profile);
 		public IEnumerable<IUserProfile> GetAllUserProfiles() => _userController.GetAllUserProfiles();
@@ -75,6 +75,7 @@ namespace NR155910155992.MemoGame.BL
 		public void DeleteUserProfile(IUserProfile profile) => _userController.DeleteUserProfile(profile);
 		public void UpdateUserProfile(IUserProfile profile, string name) => _userController.UpdateUserProfile(profile, name);
 
+		// Card management
 		public IEnumerable<ICard> GetAllCards() => _cardManager.GetAllCards();
 		public ICard CreateNewCard(string imagePath, string name) => _cardManager.CreateNewCard(imagePath, name);
 		public void DeleteCard(ICard card) => _cardManager.DeleteCard(card);

@@ -5,7 +5,7 @@
         <Setter Property="TextBlock.TextAlignment" Value="Center" />
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="#291720" />
         <Setter Property="Padding" Value="20,10" />
         <Setter Property="Margin" Value="10" />
         <Setter Property="Template">

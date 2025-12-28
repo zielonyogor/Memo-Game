@@ -25,7 +25,7 @@
             <TextBlock
                 Text="{Binding UserText}"
                 FontWeight="SemiBold"
-                Foreground="Black"/>
+                Foreground="#291720"/>
         </Border>
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
