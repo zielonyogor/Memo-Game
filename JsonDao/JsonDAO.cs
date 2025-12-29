@@ -11,14 +11,11 @@ namespace NR155910155992.MemoGame.JsonDao
 		private readonly string _cardsPath;
 		private readonly string _userProfilesPath;
 		private readonly string _gameSessionsPath;
-		// _playerGameResultsPath is removed
 
 		private List<Card> _cards = new();
 		private List<UserProfile> _userProfiles = new();
 		private List<GameSession> _gameSessions = new();
 
-		// We keep this list in memory for convenience, but it is not saved to its own file.
-		// It is populated by flattening the GameSessions.
 		private List<PlayerGameResult> _playerGameResults = new();
 
 		public JsonDAO()
@@ -43,7 +40,6 @@ namespace NR155910155992.MemoGame.JsonDao
 				LoadData();
 		}
 
-		// ... Get/Create User and Card methods remain the same ...
 		public IEnumerable<ICard> GetAllCards() => _cards;
 		public IUserProfile GetFirstUserProfile() => _userProfiles.FirstOrDefault();
 		public IEnumerable<IUserProfile> GetAllUserProfiles() => _userProfiles;
@@ -56,9 +52,9 @@ namespace NR155910155992.MemoGame.JsonDao
 			return userProfile;
 		}
 
-		public void DeleteUserProfile(IUserProfile userProfile)
+		public void DeleteUserProfile(int userProfileId)
 		{
-			_userProfiles.RemoveAll(up => up.Id == userProfile.Id);
+			_userProfiles.RemoveAll(up => up.Id == userProfileId);
 			SaveToFile(_userProfilesPath, _userProfiles);
 		}
 
@@ -74,29 +70,28 @@ namespace NR155910155992.MemoGame.JsonDao
 
 		public ICard CreateNewCard(string imagePath, string name)
 		{
-			var card = new Card { Id = Guid.NewGuid().GetHashCode(), Name = name, ImagePath = imagePath };
+			var path = ImageUtility.SaveImage(imagePath, name);
+			var card = new Card { Id = Guid.NewGuid().GetHashCode(), Name = name, ImagePath = path };
 			_cards.Add(card);
 			SaveToFile(_cardsPath, _cards);
 			return card;
 		}
 
-		public void DeleteCard(ICard card)
+		public void DeleteCard(int cardId)
 		{
-			_cards.RemoveAll(c => c.Id == card.Id);
+			_cards.RemoveAll(c => c.Id == cardId);
 			SaveToFile(_cardsPath, _cards);
 		}
 
-		public void UpdateCardName(ICard card, string newName)
+		public void UpdateCardName(int cardId, string newName)
 		{
-			var index = _cards.FindIndex(c => c.Id == card.Id);
+			var index = _cards.FindIndex(c => c.Id == cardId);
 			if (index != -1)
 			{
 				_cards[index].Name = newName;
 				SaveToFile(_cardsPath, _cards);
 			}
 		}
-
-		// --- UPDATED GAME SESSION LOGIC ---
 
 		public IEnumerable<IGameSession> GetAllGameSessions()
 		{
@@ -112,7 +107,6 @@ namespace NR155910155992.MemoGame.JsonDao
 
 		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession)
 		{
-			// We can now just return the list inside the session object
 			return gameSession.PlayerResults;
 		}
 
@@ -127,7 +121,6 @@ namespace NR155910155992.MemoGame.JsonDao
 				Duration = duration,
 				GameType = gameType,
 				GameMode = gameMode,
-				// Ensure the list is initialized
 				PlayerResultsConcrete = new List<PlayerGameResult>()
 			};
 
@@ -142,16 +135,11 @@ namespace NR155910155992.MemoGame.JsonDao
 				GameSessionId = gameSessionId
 			}).ToList();
 
-			// Add results to the session's internal list
 			gameSession.PlayerResultsConcrete.AddRange(playerResults);
 
-			// Add session to main list
 			_gameSessions.Add(gameSession);
-
-			// Also update our flat cache list
 			_playerGameResults.AddRange(playerResults);
 
-			// Save ONLY the sessions file (which now contains results)
 			SaveToFile(_gameSessionsPath, _gameSessions);
 
 			return gameSession;
@@ -159,7 +147,6 @@ namespace NR155910155992.MemoGame.JsonDao
 
 		public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner)
 		{
-			// Find the concrete session in our list
 			var concreteSession = _gameSessions.FirstOrDefault(gs => gs.Id == gameSession.Id);
 			if (concreteSession == null)
 				throw new ArgumentException("Game session not found");
@@ -175,13 +162,8 @@ namespace NR155910155992.MemoGame.JsonDao
 				UserProfileId = userProfile.Id
 			};
 
-			// Add to the session structure
 			concreteSession.PlayerResultsConcrete.Add(playerGameResult);
-
-			// Add to cache
 			_playerGameResults.Add(playerGameResult);
-
-			// Save ONLY the sessions file
 			SaveToFile(_gameSessionsPath, _gameSessions);
 
 			return playerGameResult;
@@ -191,11 +173,8 @@ namespace NR155910155992.MemoGame.JsonDao
 		{
 			_cards = LoadFromFile<Card>(_cardsPath);
 			_userProfiles = LoadFromFile<UserProfile>(_userProfilesPath);
-
-			// This loads sessions AND their nested results
 			_gameSessions = LoadFromFile<GameSession>(_gameSessionsPath);
 
-			// We now flatten the loaded structure to populate our helper cache list
 			_playerGameResults = _gameSessions
 				.SelectMany(gs => gs.PlayerResultsConcrete)
 				.ToList();
@@ -241,7 +220,6 @@ namespace NR155910155992.MemoGame.JsonDao
 
 			_gameSessions = new List<GameSession> { s1, s2, s3 };
 
-			// Populate cache for Hydrate references to work
 			_playerGameResults = new List<PlayerGameResult> { r1, r2, r3, r4 };
 
 			HydrateReferences();
@@ -249,7 +227,6 @@ namespace NR155910155992.MemoGame.JsonDao
 			SaveToFile(_cardsPath, _cards);
 			SaveToFile(_userProfilesPath, _userProfiles);
 			SaveToFile(_gameSessionsPath, _gameSessions);
-			// No longer saving playerGameResultsPath
 		}
 
 		private void HydrateReferences()

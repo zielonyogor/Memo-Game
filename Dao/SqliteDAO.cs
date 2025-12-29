@@ -85,11 +85,14 @@ namespace NR155910155992.MemoGame.Dao
 
 		// User
 
-		public void DeleteUserProfile(IUserProfile userProfile)
+		public void DeleteUserProfile(int userProfileId)
 		{
-			var user = userProfile as UserProfile ?? throw new ArgumentException("userProfile must be of type UserProfile", nameof(userProfile));
-			_db.UserProfiles.Remove(user);
-			_db.SaveChanges();
+			var user = _db.UserProfiles.Find(userProfileId);
+			if (user != null)
+			{
+				_db.UserProfiles.Remove(user);
+				_db.SaveChanges();
+			}
 		}
 
 		public void UpdateUserProfile(IUserProfile userProfile)
@@ -109,19 +112,25 @@ namespace NR155910155992.MemoGame.Dao
 			return card;
 		}
 
-		public void UpdateCardName(ICard card, string newName)
+		public void UpdateCardName(int cardId, string newName)
 		{
-			var dbCard = card as Card ?? throw new ArgumentException("card must be of type Card", nameof(card));
-			dbCard.Name = newName;
-			_db.Cards.Update(dbCard);
-			_db.SaveChanges();
+			var dbCard = _db.Cards.Find(cardId);
+			if (dbCard != null)
+			{
+				dbCard.Name = newName;
+				_db.Cards.Update(dbCard);
+				_db.SaveChanges();
+			}
 		}
 
-		public void DeleteCard(ICard card)
+		public void DeleteCard(int cardId)
 		{
-			var dbCard = card as Card ?? throw new ArgumentException("card must be of type Card", nameof(card));
-			_db.Cards.Remove(dbCard);
-			_db.SaveChanges();
+			var dbCard = _db.Cards.Find(cardId);
+			if (dbCard != null)
+			{
+				_db.Cards.Remove(dbCard);
+				_db.SaveChanges();
+			}
 		}
 	}
 }

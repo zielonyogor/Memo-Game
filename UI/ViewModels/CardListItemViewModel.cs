@@ -64,7 +64,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			var result = MessageBox.Show($"Are you sure you want to delete '{Card.Name}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 			if (result == MessageBoxResult.Yes)
 			{
-				_gameManager.DeleteCard(Card);
+				_gameManager.DeleteCard(Card.Id);
 				_parent.RemoveCard(this);
 			}
 		}
@@ -82,7 +82,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				Name = EditedName.Trim();
 
 			IsEditing = false;
-			_gameManager.UpdateCardName(Card, EditedName.Trim());
+			_gameManager.UpdateCardName(Card.Id, EditedName.Trim());
 		}
 
 		private void CancelEdit()

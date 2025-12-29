@@ -17,12 +17,12 @@ namespace NR155910155992.MemoGame.Interfaces
 
 		public IUserProfile GetFirstUserProfile();
 		public IEnumerable<IUserProfile> GetAllUserProfiles();
-		public void DeleteUserProfile(IUserProfile userProfile);
+		public void DeleteUserProfile(int userProfileId);
 		public void UpdateUserProfile(IUserProfile userProfile);
 
 		public IEnumerable<ICard> GetAllCards();
 		public ICard CreateNewCard(string imagePath, string name);
-		public void DeleteCard(ICard card);
-		public void UpdateCardName(ICard card, string newName);
+		public void DeleteCard(int cardId);
+		public void UpdateCardName(int cardId, string newName);
 	}
 }

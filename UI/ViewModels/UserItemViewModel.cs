@@ -69,7 +69,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Delete()
 		{
-			_gameManager.DeleteUserProfile(User);
+			_gameManager.DeleteUserProfile(User.Id);
 			_parent.RemoveUser(this);
 		}
 

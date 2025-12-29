@@ -26,14 +26,14 @@ namespace NR155910155992.MemoGame.BL
 			return _dao.CreateNewCard(imagePath, name);
 		}
 
-		public void DeleteCard(ICard card)
+		public void DeleteCard(int cardId)
 		{
-			_dao.DeleteCard(card);
+			_dao.DeleteCard(cardId);
 		}
 
-		public void UpdateCardName(ICard card, string newName)
+		public void UpdateCardName(int cardId, string newName)
 		{
-			_dao.UpdateCardName(card, newName);
+			_dao.UpdateCardName(cardId, newName);
 		}
 	}
 }

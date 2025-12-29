@@ -72,13 +72,13 @@ namespace NR155910155992.MemoGame.BL
 		public void SetCurrentUserProfile(IUserProfile profile) => _userController.SetCurrentUserProfile(profile);
 		public IEnumerable<IUserProfile> GetAllUserProfiles() => _userController.GetAllUserProfiles();
 		public IUserProfile CreateNewUserProfile(string name) => _userController.CreateNewUserProfile(name);
-		public void DeleteUserProfile(IUserProfile profile) => _userController.DeleteUserProfile(profile);
+		public void DeleteUserProfile(int userProfileId) => _userController.DeleteUserProfile(userProfileId);
 		public void UpdateUserProfile(IUserProfile profile, string name) => _userController.UpdateUserProfile(profile, name);
 
 		// Card management
 		public IEnumerable<ICard> GetAllCards() => _cardManager.GetAllCards();
 		public ICard CreateNewCard(string imagePath, string name) => _cardManager.CreateNewCard(imagePath, name);
-		public void DeleteCard(ICard card) => _cardManager.DeleteCard(card);
-		public void UpdateCardName(ICard card, string newName) => _cardManager.UpdateCardName(card, newName);
+		public void DeleteCard(int cardId) => _cardManager.DeleteCard(cardId);
+		public void UpdateCardName(int cardId, string newName) => _cardManager.UpdateCardName(cardId, newName);
 	}
 }

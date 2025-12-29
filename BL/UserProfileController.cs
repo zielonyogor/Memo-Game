@@ -35,12 +35,16 @@ namespace NR155910155992.MemoGame.BL
 			return newUser;
 		}
 
-		public void DeleteUserProfile(IUserProfile userProfile)
+		public void DeleteUserProfile(int userProfileId)
 		{
-			_dao.DeleteUserProfile(userProfile);
-			if (currentUserProfile == userProfile)
+			if (currentUserProfile?.Id == userProfileId)
 			{
-				currentUserProfile = _dao.GetFirstUserProfile(); // fallback to first user profile
+				currentUserProfile = null; 
+			}
+			_dao.DeleteUserProfile(userProfileId);
+			if (currentUserProfile == null)
+			{
+				currentUserProfile = _dao.GetFirstUserProfile();
 			}
 		}
 

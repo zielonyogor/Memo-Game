@@ -87,6 +87,7 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		{
 			try
 			{
+				_gameManager.DeleteCard(id);
 				return RedirectToAction(nameof(Index));
 			}
 			catch
