@@ -5,50 +5,40 @@ using NR155910155992.MemoGame.WebUI.Models;
 
 namespace NR155910155992.MemoGame.WebUI.Controllers
 {
-	public class GameController : Controller
+	public class CardItemsController : Controller
 	{
 		private readonly IGameManager _gameManager;
 
-		public GameController(IGameManager gameManager)
+		public CardItemsController(IGameManager gameManager)
 		{
 			_gameManager = gameManager;
 		}
 
-		// GET: GameController
+		// GET: CardItemsController
 		public ActionResult Index()
 		{
-			//propably will have to be changed to GetRandomCardsPositionedOnBoard
-			var rawCards = _gameManager.GetRandomCardsPositionedOnBoard(4,4);
-
-			var board = new List<CardViewModel>();
-			for (int r = 0; r < 4; r++)
+			var cards = _gameManager.GetAllCards();
+			var cardList = new List<CardItem>();
+			foreach (var card in cards)
 			{
-				for (int c = 0; c < 4; c++)
-				{
-					ICard card = rawCards[r, c];
-					if (card != null)
-					{
-						var cardViewModel = new CardViewModel(card);
-						board.Add(cardViewModel);
-					}
-				}
+				cardList.Add(new CardItem(card));
 			}
-			return View(board); // we should probably not pass list of cards here but maybe a GameViewModel instead
+			return View(cardList);
 		}
 
-		// GET: GameController/Details/5
+		// GET: CardItemsController/Details/5
 		public ActionResult Details(int id)
 		{
 			return View();
 		}
 
-		// GET: GameController/Create
+		// GET: CardItemsController/Create
 		public ActionResult Create()
 		{
 			return View();
 		}
 
-		// POST: GameController/Create
+		// POST: CardItemsController/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Create(IFormCollection collection)
@@ -63,13 +53,13 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			}
 		}
 
-		// GET: GameController/Edit/5
+		// GET: CardItemsController/Edit/5
 		public ActionResult Edit(int id)
 		{
 			return View();
 		}
 
-		// POST: GameController/Edit/5
+		// POST: CardItemsController/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(int id, IFormCollection collection)
@@ -84,13 +74,13 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			}
 		}
 
-		// GET: GameController/Delete/5
+		// GET: CardItemsController/Delete/5
 		public ActionResult Delete(int id)
 		{
 			return View();
 		}
 
-		// POST: GameController/Delete/5
+		// POST: CardItemsController/Delete/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Delete(int id, IFormCollection collection)
