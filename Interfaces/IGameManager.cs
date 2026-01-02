@@ -11,7 +11,9 @@ namespace NR155910155992.MemoGame.Interfaces
         public void StartNewGame(GameMode gameMode, GameType gameType);
         public IEnumerable<IGameSession> GetAllGameSessionsForCurrentUser(); //for game history screen
 
-        public Task OnCardClicked(int clickedCardId);
+        public Task<ClickResult> OnCardClicked(int clickedCardId);
+        public void ResolveMismatch();
+
         public event EventHandler<int> CardsMatched;
 		public event EventHandler CardsMismatched;
         public event EventHandler GameFinished;

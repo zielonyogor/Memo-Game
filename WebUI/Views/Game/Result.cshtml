@@ -1,0 +1,22 @@
+﻿@model NR155910155992.MemoGame.WebUI.Models.GameResultViewModel
+@{
+    ViewData["Title"] = "Game Over";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4 text-success">Congratulations!</h1>
+    <p class="lead">You finished the game.</p>
+
+    <div class="card mx-auto mt-4" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Stats</h5>
+            <p class="card-text">Time: <strong>@Model.TimeElapsed.ToString()</strong></p>
+            <p class="card-text">Pairs Found: <strong>@Model.PairsMatched</strong></p>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Setup" class="btn btn-primary btn-lg">Play Again</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-lg">Main Menu</a>
+    </div>
+</div>

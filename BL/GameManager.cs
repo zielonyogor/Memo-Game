@@ -51,9 +51,14 @@ namespace NR155910155992.MemoGame.BL
 			_sessionManager.StartNewSession(gameMode, gameType, totalPairs);
 		}
 
-		public async Task OnCardClicked(int clickedCardId)
+		public async Task<ClickResult> OnCardClicked(int clickedCardId)
 		{
-			await _sessionManager.ProcessCardClick(clickedCardId);
+			return await _sessionManager.ProcessCardClick(clickedCardId);
+		}
+
+		public void ResolveMismatch()
+		{
+			_sessionManager.ResolveMismatch();
 		}
 
 		private void OnSessionFinished(object? sender, EventArgs e)

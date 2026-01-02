@@ -1,50 +1,50 @@
-﻿@namespace NR155910155992.MemoGame.WebUI.Views.Game
-@using NR155910155992.MemoGame.WebUI.Models
+﻿@model IEnumerable<NR155910155992.MemoGame.WebUI.Models.CardViewModel>
 
-@model IEnumerable<CardViewModel>
 @{
-	ViewData["Title"] = "Game";
+    ViewData["Title"] = "Game";
+    int cols = (int?)TempData.Peek("Cols") ?? 4;
 }
 
-<h1>Play</h1>
+<div class="game-container">
+    <div class="game-header">
+        <h1>Current Game</h1>
+        <a asp-controller="Game" asp-action="Setup" class="btn btn-outline-danger">Restart</a>
+    </div>
 
-<div class="game-board">
-    @foreach (var card in Model)
-    {
-        <div class="card" data-id="@card.Id">
-            <img src="/images/card_back.png" class="card-back" onclick="flipCard(this)" />
+    <div class="game-board" style="grid-template-columns: repeat(@cols, 1fr);">
+        @foreach (var card in Model)
+        {
+            bool isFaceUp = card.IsRevealed || card.IsMatched;
+            string flippedClass = isFaceUp ? "is-flipped" : "";
 
-            <img src="@card.ImagePath" class="card-front" style="display:none;" />
-        </div>
-    }
+            string imgSource = isFaceUp ? card.ImagePath : "";
+            string displayStyle = isFaceUp ? "display:block;" : "display:none;";
+
+            string clickAction = card.IsMatched ? "" : $"flipCard(this, {card.Id})";
+            string cursorStyle = card.IsMatched ? "cursor: default;" : "cursor: pointer;";
+
+            <div class="card-scene" style="@cursorStyle" onclick="@clickAction">
+
+                <div class="card-object @flippedClass" id="card-@card.Id">
+
+                    <div class="face front">
+                        <img src="@Url.Content("~/Assets/Cards/card_backside.png")" alt="Back" />
+                    </div>
+
+                    <div class="face back">
+                        <img id="img-@card.Id"
+                             src="@imgSource"
+                             alt="Revealed"
+                             style="@displayStyle" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
-<style>
-    .game-board {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Siatka 4x4 */
-        gap: 10px;
-        max-width: 600px;
-    }
+@section Styles {
+    <link rel="stylesheet" href="~/css/board.scss" asp-append-version="true" />
+}
 
-    .card img {
-        width: 100%;
-        height: auto;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-</style>
-
-<script>
-    // Prosta logika JS do odwracania (tylko wizualna)
-    function flipCard(element) {
-        // To tylko demo - w prawdziwej grze musisz wysłać AJAX do serwera
-        var parent = element.parentElement;
-        var back = parent.querySelector('.card-back');
-        var front = parent.querySelector('.card-front');
-
-        back.style.display = 'none';
-        front.style.display = 'block';
-    }
-</script>
+<script src="~/js/board.js" asp-append-version="true"></script>

@@ -1,0 +1,49 @@
+﻿.game-board {
+    display: grid;
+    gap: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.card-scene {
+    aspect-ratio: 3/4;
+    cursor: pointer;
+    perspective: 1000px;
+}
+
+.card-object {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card-object.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.face.front {
+    background: #2c3e50;
+}
+
+.face.back {
+    transform: rotateY(180deg);
+    background: white;
+}
+
+.face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

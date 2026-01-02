@@ -10,17 +10,43 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JavaScriptEngineSwitcher.Extensions.MsDependencyInjection" Version="3.24.1" />
+    <PackageReference Include="JavaScriptEngineSwitcher.V8" Version="3.29.1" />
+    <PackageReference Include="LigerShark.WebOptimizer.Sass" Version="3.0.143" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.5.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.11" />
   </ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\BL\BL.csproj" />
 		<ProjectReference Include="..\Interfaces\Interfaces.csproj" />
-		<ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\Dao\Dao.csproj" />
 		<ProjectReference Include="..\JsonDao\JsonDao.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="&#xD;&#xA;		  xcopy /Y /S &quot;$(SolutionDir)BL\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;		  xcopy /Y /S &quot;$(SolutionDir)Dao\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;		  xcopy /Y /S &quot;$(SolutionDir)JsonDao\bin\Debug\net9.0\*.dll&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;		" />
-	</Target>
+	<ItemGroup>
+	  <Content Update="wwwroot\Assets\Cards\card1.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\card2.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\card3.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\card4.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\card5.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\card_backside.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\Assets\Cards\missing_image.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 
 </Project>

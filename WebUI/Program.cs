@@ -1,5 +1,7 @@
 using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
+using JavaScriptEngineSwitcher.V8;
 
 namespace NR155910155992.WebUI
 {
@@ -11,6 +13,17 @@ namespace NR155910155992.WebUI
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
+
+			builder.Services.AddJsEngineSwitcher(options =>
+			{
+				options.AllowCurrentProperty = false;
+				options.DefaultEngineName = V8JsEngine.EngineName;
+			})
+			.AddV8();
+			builder.Services.AddWebOptimizer(pipeline =>
+			{
+				pipeline.CompileScssFiles();
+			});
 
 			builder.Services.AddSingleton<LibraryLoader>();
 			builder.Services.AddScoped<IGameManager>(provider =>
@@ -26,6 +39,7 @@ namespace NR155910155992.WebUI
 
 
 			var app = builder.Build();
+			app.UseWebOptimizer();
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment())

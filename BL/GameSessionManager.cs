@@ -54,15 +54,15 @@ namespace NR155910155992.MemoGame.BL
 			_timer.Start();
 		}
 
-		public async Task ProcessCardClick(int clickedCardId)
+		public async Task<ClickResult> ProcessCardClick(int clickedCardId)
 		{
 			if (_isProcessingMismatch)
-				return;
+				return ClickResult.Ignore;
 
 			if (_firstRevealedCardId == null)
 			{
 				_firstRevealedCardId = clickedCardId;
-				return;
+				return ClickResult.FirstCard;
 			}
 
 			if (_firstRevealedCardId == clickedCardId)
@@ -79,6 +79,7 @@ namespace NR155910155992.MemoGame.BL
 					_timer.Stop();
 					GameFinished?.Invoke(this, EventArgs.Empty);
 				}
+				return ClickResult.Match;
 			}
 			else
 			{
@@ -86,10 +87,17 @@ namespace NR155910155992.MemoGame.BL
 				_isProcessingMismatch = true;
 				Debug.WriteLine($"No match: {_firstRevealedCardId} vs {clickedCardId}");
 
-				await Task.Delay(1000);
+				// REMOVED: await Task.Delay(1000);
+				
+				return ClickResult.Mismatch;
+			}
+		}
 
+		public void ResolveMismatch()
+		{
+			if (_isProcessingMismatch)
+			{
 				CardMismatched?.Invoke(this, EventArgs.Empty);
-
 				_isProcessingMismatch = false;
 				_firstRevealedCardId = null;
 			}

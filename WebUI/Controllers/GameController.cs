@@ -14,95 +14,93 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			_gameManager = gameManager;
 		}
 
-		// GET: GameController
-		public ActionResult Index()
+		[HttpGet]
+		public IActionResult Settings()
 		{
-			//propably will have to be changed to GetRandomCardsPositionedOnBoard
-			var rawCards = _gameManager.GetRandomCardsPositionedOnBoard(4,4);
+			return View(new GameSettingModel());
+		}
 
-			var board = new List<CardViewModel>();
-			for (int r = 0; r < 4; r++)
+		[HttpPost]
+		public IActionResult Start(GameSettingModel model)
+		{
+			TempData["Rows"] = model.Rows;
+			TempData["Cols"] = model.Columns;
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		// GET: Game/
+		[HttpGet]
+		public IActionResult Index()
+		{
+			int rows = (int?)TempData.Peek("Rows") ?? 2;
+			int cols = (int?)TempData.Peek("Cols") ?? 1;
+
+			var board = _gameManager.GetRandomCardsPositionedOnBoard(rows, cols);
+
+			var cardList = new List<CardViewModel>();
+			for (int r = 0; r < rows; r++)
 			{
-				for (int c = 0; c < 4; c++)
+				for (int c = 0; c < cols; c++)
 				{
-					ICard card = rawCards[r, c];
+					var card = board[r, c];
 					if (card != null)
 					{
-						var cardViewModel = new CardViewModel(card);
-						board.Add(cardViewModel);
+						cardList.Add(new CardViewModel(card));
 					}
 				}
 			}
-			return View(board); // we should probably not pass list of cards here but maybe a GameViewModel instead
+
+			_gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);
+			return View(cardList);
 		}
 
-		// GET: GameController/Details/5
-		public ActionResult Details(int id)
-		{
-			return View();
-		}
-
-		// GET: GameController/Create
-		public ActionResult Create()
-		{
-			return View();
-		}
-
-		// POST: GameController/Create
 		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Create(IFormCollection collection)
+		public async Task<IActionResult> Flip(int id)
 		{
-			try
+			var card = _gameManager.GetAllCards().FirstOrDefault(c => c.Id == id);
+			var result = await _gameManager.OnCardClicked(id);
+
+			bool resetRequired = false;
+			if (result == Core.ClickResult.Mismatch)
 			{
-				return RedirectToAction(nameof(Index));
+				resetRequired = true;
 			}
-			catch
+			else if (result == Core.ClickResult.Match)
 			{
-				return View();
+				// Handle match
 			}
+
+			return Json(new
+			{
+				success = true,
+				imageUrl = Url.Action("GetImage", "CardItems", new { id = card.Id }),
+				isMatch = result == Core.ClickResult.Match,
+				resetRequired = resetRequired,
+				isGameOver = false // You might want to check if game is finished
+			});
 		}
 
-		// GET: GameController/Edit/5
-		public ActionResult Edit(int id)
-		{
-			return View();
-		}
-
-		// POST: GameController/Edit/5
 		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Edit(int id, IFormCollection collection)
+		public IActionResult ResolveMismatch()
 		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
+			_gameManager.ResolveMismatch();
+			return Ok();
 		}
 
-		// GET: GameController/Delete/5
-		public ActionResult Delete(int id)
+		// GET: Game/Result
+		[HttpGet]
+		public IActionResult Result(double timeElapsed, int pairs)
 		{
-			return View();
-		}
+			var timeSpan = TimeSpan.FromSeconds(timeElapsed);
 
-		// POST: GameController/Delete/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, IFormCollection collection)
-		{
-			try
+			var model = new GameResultViewModel
 			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
+				TimeElapsed = timeSpan,
+				PairsMatched = pairs,
+			};
+
+			return View(model);
 		}
 	}
 }

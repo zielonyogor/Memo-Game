@@ -15,10 +15,12 @@ namespace NR155910155992.MemoGame.Core
 			if(!Directory.Exists(_imagesFolder))
 				Directory.CreateDirectory(_imagesFolder);
 
-			string imagePath = Path.Combine(_imagesFolder, imageName);
+			string imageExt = Path.GetExtension(imageName);
+			string imagePath = Path.Combine(_imagesFolder, imageName + Guid.NewGuid().ToString() + imageExt);
 			File.WriteAllBytes(imagePath, imageData);
 			return imagePath;
 		}
+
 		public static string SaveImage(string imagePath, string imageName)
 		{
 			if(!File.Exists(imagePath))
@@ -26,7 +28,8 @@ namespace NR155910155992.MemoGame.Core
 			if(!Directory.Exists(_imagesFolder))
 				Directory.CreateDirectory(_imagesFolder);
 
-			string destPath = Path.Combine(_imagesFolder, imageName);
+			string imageExt = Path.GetExtension(imageName);
+			string destPath = Path.Combine(_imagesFolder, imageName + Guid.NewGuid().ToString() + imageExt);
 			File.Copy(imagePath, destPath, true);
 			return destPath;
 		}

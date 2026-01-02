@@ -61,12 +61,18 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
         }
 
-		private void OnClick()
+		private async void OnClick()
 		{
             if (IsRevealed || IsMatched || _gameManager.IsShowingChoosenCards)
 				return;
             IsRevealed = true;
-            _gameManager.OnCardClicked(Id);
+            var result = await _gameManager.OnCardClicked(Id);
+
+			if (result == Core.ClickResult.Mismatch)
+			{
+				await Task.Delay(1000);
+				_gameManager.ResolveMismatch();
+			}
 		}
 	}
 }

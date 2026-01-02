@@ -1,0 +1,26 @@
+﻿@model NR155910155992.MemoGame.WebUI.Models.GameSettingModel
+
+@{
+    ViewData["Title"] = "GameSetting";
+}
+
+<div class="container text-center mt-5">
+    <h1>Start New Game</h1>
+    <form asp-action="Start" method="post" class="mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <label>Rows</label>
+                <input asp-for="Rows" class="form-control" type="number" min="2" max="6" />
+            </div>
+            <div class="col-md-3">
+                <label>Columns</label>
+                <input asp-for="Columns" class="form-control" type="number" min="2" max="6" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success btn-lg mt-4">Start Playing</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

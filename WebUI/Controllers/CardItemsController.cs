@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.WebUI.Models;
@@ -8,10 +9,12 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 	public class CardItemsController : Controller
 	{
 		private readonly IGameManager _gameManager;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public CardItemsController(IGameManager gameManager)
+		public CardItemsController(IGameManager gameManager, IWebHostEnvironment webHostEnvironment)
 		{
 			_gameManager = gameManager;
+			_webHostEnvironment = webHostEnvironment;
 		}
 
 		// GET: CardItemsController
@@ -25,38 +28,22 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			}
 			return View(cardList);
 		}
-
-		// GET: CardItemsController/Details/5
-		public ActionResult Details(int id)
+		public IActionResult Create()
 		{
 			return View();
 		}
 
-		// GET: CardItemsController/Create
-		public ActionResult Create()
-		{
-			return View();
-		}
-
-		// POST: CardItemsController/Create
+		// POST: CardItems/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create(IFormCollection collection)
+		public async Task<IActionResult> Create([Bind("Name,ImagePath")] CardItem cardItem)
 		{
-			try
+			if (ModelState.IsValid)
 			{
+				_gameManager.CreateNewCard(cardItem.Name, cardItem.ImagePath);
 				return RedirectToAction(nameof(Index));
 			}
-			catch
-			{
-				return View();
-			}
-		}
-
-		// GET: CardItemsController/Edit/5
-		public ActionResult Edit(int id)
-		{
-			return View();
+			return View(cardItem);
 		}
 
 		// POST: CardItemsController/Edit/5
@@ -64,26 +51,25 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(int id, IFormCollection collection)
 		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
+			if (!ModelState.IsValid)
 			{
 				return View();
 			}
+
+			string? name = collection["Name"];
+			if (name == null)
+			{
+				return View();
+			}
+
+			_gameManager.UpdateCardName(id, name);
+			return RedirectToAction(nameof(Index));
 		}
 
-		// GET: CardItemsController/Delete/5
-		public ActionResult Delete(int id)
-		{
-			return View();
-		}
-
-		// POST: CardItemsController/Delete/5
+		// POST: CardItems/Delete/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, IFormCollection collection)
+		public ActionResult Delete(int id)
 		{
 			try
 			{
@@ -92,8 +78,47 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			}
 			catch
 			{
-				return View();
+				return View(nameof(Index));
 			}
+		}
+
+		[HttpGet]
+		public IActionResult GetImage(int id)
+		{
+			// 1. Get the card metadata
+			var card = _gameManager.GetAllCards().FirstOrDefault(c => c.Id == id);
+			if (card == null)
+				return NotFound();
+
+			string imagePath = card.ImagePath;
+			string finalPath;
+			string contentType = "image/png"; // You might want a helper to detect jpg/png
+
+			// 2. Determine where the file actually lives
+			if (System.IO.Path.IsPathFullyQualified(imagePath))
+			{
+				// CASE A: It's an absolute path (C:\Users\...)
+				// This is your User Data
+				finalPath = imagePath;
+			}
+			else
+			{
+				// CASE B: It's a relative path (Assets/Cards/...)
+				// You should copy your "Assets" folder into "wwwroot" for the web project.
+				// Example: wwwroot/Assets/Cards/image_1.png
+				finalPath = System.IO.Path.Combine(_webHostEnvironment.WebRootPath, imagePath);
+			}
+
+			// 3. Check if file exists and return it
+			if (!System.IO.File.Exists(finalPath))
+			{
+				// Return a default placeholder image if the file is missing
+				return NotFound("Image file not found on server.");
+			}
+
+			// 4. Serve the bytes
+			var fileBytes = System.IO.File.ReadAllBytes(finalPath);
+			return File(fileBytes, contentType);
 		}
 	}
 }

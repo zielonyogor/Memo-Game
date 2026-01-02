@@ -16,6 +16,9 @@ namespace NR155910155992.MemoGame.WebUI.Models
 			Id = card.Id;
 			Name = card.Name;
 			ImagePath = card.ImagePath;
+
+			IsRevealed = false;
+			IsMatched = false;
 		}
 	}
 }
