@@ -37,8 +37,8 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			{
 				return RedirectToAction(nameof(Index));
 			}
-			_gameManager.SetCurrentUserProfile(user);
-			return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
+			_gameManager.SetCurrentUserProfile(user); // TODO: not setting?
+			return RedirectToAction("Index", "Home");
 		}
 
 		// GET: UsersController/Create

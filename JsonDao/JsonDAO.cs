@@ -55,7 +55,14 @@ namespace NR155910155992.MemoGame.JsonDao
 		public void DeleteUserProfile(int userProfileId)
 		{
 			_userProfiles.RemoveAll(up => up.Id == userProfileId);
+
+			foreach (var session in _gameSessions) // remove also results
+			{
+				((List<PlayerGameResult>)session.PlayerResults).RemoveAll(pr => pr.UserProfileId == userProfileId);
+			}
+
 			SaveToFile(_userProfilesPath, _userProfiles);
+			SaveToFile(_gameSessionsPath, _gameSessions);
 		}
 
 		public void UpdateUserProfile(IUserProfile userProfile)
