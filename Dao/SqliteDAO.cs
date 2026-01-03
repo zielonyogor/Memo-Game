@@ -1,4 +1,5 @@
-﻿using NR155910155992.MemoGame.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Dao.Models;
 using NR155910155992.MemoGame.Interfaces;
 
@@ -6,11 +7,12 @@ namespace NR155910155992.MemoGame.Dao
 {
 	public class SqliteDAO : IDataAccessObject
 	{
-		private readonly SqliteDbContext _db = new SqliteDbContext();
+		private readonly SqliteDbContext _db;
 
-		public IEnumerable<ICard> GetAllCards()
-		{ 
-			return _db.Cards.ToList(); 
+		public SqliteDAO()
+		{
+			_db = new SqliteDbContext();
+			_db.Database.EnsureCreated();
 		}
 
 		public IEnumerable<IGameSession> GetAllGameSessions()
@@ -18,29 +20,16 @@ namespace NR155910155992.MemoGame.Dao
 			return _db.GameSessions.ToList();
 		}
 
-		public IEnumerable<IUserProfile> GetAllUserProfiles()
-		{
-			return _db.UserProfiles.ToList();
-		}
-
-		public IUserProfile GetFirstUserProfile()
-		{
-			return _db.UserProfiles.First();
-		}
-
 		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile)
 		{
-			return _db.GameSessions
-				.Where(gs => gs.PlayerResults
-				.Any(pr => pr.UserProfileId == userProfile.Id))
+			var res = _db.GameSessions
+				.Include(gs => gs.PlayerResultsConcrete)
+				.ThenInclude(pgr => pgr.User)
+				.Where(gs => gs.PlayerResultsConcrete
+					.Any(pr => pr.UserProfileId == userProfile.Id))
 				.ToList();
-		}
-
-		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession)
-		{
-			return _db.PlayerGameResults
-				.Where(pgr => pgr.GameSessionId == gameSession.Id)
-				.ToList();
+			
+			return res;
 		}
 
 		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users, int totalPairs)
@@ -50,8 +39,21 @@ namespace NR155910155992.MemoGame.Dao
 				GameDate = date,
 				Duration = duration,
 				GameType = gameType,
-				GameMode = gameMode
+				GameMode = gameMode,
+				PlayerResultsConcrete = new List<PlayerGameResult>()
 			};
+
+			foreach (var user in users)
+			{
+				var result = new PlayerGameResult
+				{
+					UserProfileId = user.Id,
+					GameSession = gameSession,
+					CardsUncovered = totalPairs,
+					IsWinner = true
+				};
+				gameSession.PlayerResultsConcrete.Add(result);
+			}
 
 			_db.GameSessions.Add(gameSession);
 			_db.SaveChanges();
@@ -59,17 +61,7 @@ namespace NR155910155992.MemoGame.Dao
 			return gameSession;
 		}
 
-		public IUserProfile CreateNewUserProfile(string userName)
-		{
-			var userProfile = new UserProfile { UserName = userName };
-			_db.UserProfiles.Add(userProfile);
-			_db.SaveChanges();
-
-			return userProfile;
-		}
-
-
-        public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner)
+		public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner)
 		{
 			var playerGameResult = new PlayerGameResult
 			{
@@ -83,15 +75,60 @@ namespace NR155910155992.MemoGame.Dao
 			return playerGameResult;
 		}
 
+
 		// User
+		public IEnumerable<IUserProfile> GetAllUserProfiles()
+		{
+			return _db.UserProfiles.ToList();
+		}
+
+		public IUserProfile GetFirstUserProfile()
+		{
+			return _db.UserProfiles.First();
+		}
+
+		public IUserProfile CreateNewUserProfile(string userName)
+		{
+			var userProfile = new UserProfile { UserName = userName };
+			_db.UserProfiles.Add(userProfile);
+			_db.SaveChanges();
+
+			return userProfile;
+		}
 
 		public void DeleteUserProfile(int userProfileId)
 		{
-			var user = _db.UserProfiles.Find(userProfileId);
-			if (user != null)
+			using (var transaction = _db.Database.BeginTransaction())
 			{
-				_db.UserProfiles.Remove(user);
-				_db.SaveChanges();
+				try
+				{
+					// delete also in GameSessions and PlayerGameResults
+					_db.GameSessions
+						.Where(gs => gs.PlayerResultsConcrete.Any() &&
+									 gs.PlayerResultsConcrete.All(pr => pr.UserProfileId == userProfileId))
+						.ExecuteDelete();
+
+					_db.PlayerGameResults
+						.Where(pgr => pgr.UserProfileId == userProfileId)
+						.ExecuteDelete();
+
+					int rows = _db.UserProfiles
+						.Where(u => u.Id == userProfileId)
+						.ExecuteDelete();
+
+					if (rows == 0)
+					{
+						transaction.Rollback();
+					}
+					else
+					{
+						transaction.Commit();
+					}
+				}
+				catch (Exception)
+				{
+					transaction.Rollback();
+				}
 			}
 		}
 
@@ -103,9 +140,15 @@ namespace NR155910155992.MemoGame.Dao
 		}
 
 		// Cards
+		public IEnumerable<ICard> GetAllCards()
+		{
+			return _db.Cards.ToList();
+		}
+
 		public ICard CreateNewCard(string imagePath, string name)
 		{
-			var card = new Card { Name = name, ImagePath = imagePath };
+			var srcPath = ImageUtility.SaveImage(imagePath, name);
+			var card = new Card { Name = name, ImagePath = srcPath };
 			_db.Cards.Add(card);
 			_db.SaveChanges();
 

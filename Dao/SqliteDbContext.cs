@@ -26,17 +26,21 @@ namespace NR155910155992.MemoGame.Dao
 
 			string dbPath = Path.Combine(folder, "game.db");
 			options.UseSqlite($"Data Source={dbPath}");
-
-			Console.WriteLine($"Database path: {dbPath}");
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.Entity<GameSession>()
+				.HasMany(s => s.PlayerResultsConcrete)
+				.WithOne(r => r.GameSession)
+				.HasForeignKey(r => r.GameSessionId);
+
 			modelBuilder.Entity<Card>().HasData(
-				new Card { Id = 1, Name = "Card 1", ImagePath = "images/card1.png" },
-				new Card { Id = 2, Name = "Card 2", ImagePath = "images/card2.png" },
-				new Card { Id = 3, Name = "Card 3", ImagePath = "images/card3.png" },
-				new Card { Id = 4, Name = "Card 4", ImagePath = "images/card4.png" }
+				new Card { Id = 1, Name = "Card 1", ImagePath = "Assets/Cards/card1.png" },
+				new Card { Id = 2, Name = "Card 2", ImagePath = "Assets/Cards/card2.png" },
+				new Card { Id = 3, Name = "Card 3", ImagePath = "Assets/Cards/card3.png" },
+				new Card { Id = 4, Name = "Card 4", ImagePath = "Assets/Cards/card4.png" },
+				new Card { Id = 5, Name = "Card 5", ImagePath = "Assets/Cards/card5.png" }
 			);
 			modelBuilder.Entity<UserProfile>().HasData(
 				new UserProfile { Id = 1, UserName = "Player1" },

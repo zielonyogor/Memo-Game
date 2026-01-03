@@ -11,7 +11,7 @@ namespace NR155910155992.MemoGame.Dao.Models
 		public GameType GameType { get; set; }
 		public GameMode GameMode { get; set; }
 
-		public ICollection<PlayerGameResult> PlayerResults { get; private set; } = new List<PlayerGameResult>();
-		IEnumerable<IPlayerGameResult> IGameSession.PlayerResults => PlayerResults;
+		public ICollection<PlayerGameResult> PlayerResultsConcrete { get; set; } = new List<PlayerGameResult>();
+		public IEnumerable<IPlayerGameResult> PlayerResults => PlayerResultsConcrete;
 	}
 }

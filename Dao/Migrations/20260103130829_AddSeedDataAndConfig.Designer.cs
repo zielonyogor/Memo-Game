@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NR155910155992.MemoGame.Dao;
 
@@ -10,9 +11,11 @@ using NR155910155992.MemoGame.Dao;
 namespace NR155910155992.MemoGame.Dao.Migrations
 {
     [DbContext(typeof(SqliteDbContext))]
-    partial class SqliteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260103130829_AddSeedDataAndConfig")]
+    partial class AddSeedDataAndConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
@@ -39,32 +42,26 @@ namespace NR155910155992.MemoGame.Dao.Migrations
                         new
                         {
                             Id = 1,
-                            ImagePath = "Assets/Cards/card1.png",
+                            ImagePath = "images/card1.png",
                             Name = "Card 1"
                         },
                         new
                         {
                             Id = 2,
-                            ImagePath = "Assets/Cards/card2.png",
+                            ImagePath = "images/card2.png",
                             Name = "Card 2"
                         },
                         new
                         {
                             Id = 3,
-                            ImagePath = "Assets/Cards/card3.png",
+                            ImagePath = "images/card3.png",
                             Name = "Card 3"
                         },
                         new
                         {
                             Id = 4,
-                            ImagePath = "Assets/Cards/card4.png",
+                            ImagePath = "images/card4.png",
                             Name = "Card 4"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ImagePath = "Assets/Cards/card5.png",
-                            Name = "Card 5"
                         });
                 });
 

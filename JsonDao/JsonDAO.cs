@@ -112,12 +112,7 @@ namespace NR155910155992.MemoGame.JsonDao
 				.Any(pr => pr.User.Id == userProfile.Id));
 		}
 
-		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession)
-		{
-			return gameSession.PlayerResults;
-		}
-
-		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users, int totalPairs)
+		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users, int totalCards)
 		{
 			int gameSessionId = Guid.NewGuid().GetHashCode();
 
@@ -134,8 +129,8 @@ namespace NR155910155992.MemoGame.JsonDao
 			var playerResults = users.Select(user => new PlayerGameResult()
 			{
 				Id = Guid.NewGuid().GetHashCode(),
-				CardsUncovered = totalPairs,
-				IsWinner = true, // Logic for winner might need adjustment
+				CardsUncovered = totalCards, // Logic for cards uncovered might need adjustment for multiplayer
+				IsWinner = true, // Logic for winner might need adjustment for multiplayer
 				User = user as UserProfile ?? throw new ArgumentException("Invalid UserProfile type"),
 				UserProfileId = user.Id,
 				GameSession = gameSession,

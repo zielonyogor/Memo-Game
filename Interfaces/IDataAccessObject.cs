@@ -7,11 +7,10 @@ namespace NR155910155992.MemoGame.Interfaces
 	{
 		public IEnumerable<IGameSession> GetAllGameSessions();
 		public IEnumerable<IGameSession> GetAllGameSessionsForUser(IUserProfile userProfile);
-		public IEnumerable<IPlayerGameResult> GetAllPlayerGameResultsForGameSession(IGameSession gameSession);
 
 
 		public IUserProfile CreateNewUserProfile(string userName);
-		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users, int totalPairs);
+		public IGameSession CreateGameSession(DateTime date, TimeSpan duration, GameType gameType, GameMode gameMode, IEnumerable<IUserProfile> users, int totalCards);
 		public IPlayerGameResult CreatePlayerGameResult(IUserProfile userProfile, IGameSession gameSession, int cardsUncovered, bool isWinner);
 
 
