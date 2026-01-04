@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.WebUI.Models;
-using NR155910155992.WebUI.Controllers;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.WebUI.Controllers
 {
@@ -37,7 +36,9 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			{
 				return RedirectToAction(nameof(Index));
 			}
-			_gameManager.SetCurrentUserProfile(user); // TODO: not setting?
+			Debug.WriteLine($"Selected user: {user.UserName} (ID: {user.Id})");
+			_gameManager.SetCurrentUserProfile(user);
+			Debug.WriteLine($"Current user set to: {_gameManager.GetCurrentUserProfile()?.UserName} (ID: {_gameManager.GetCurrentUserProfile()?.Id})");
 			return RedirectToAction("Index", "Home");
 		}
 

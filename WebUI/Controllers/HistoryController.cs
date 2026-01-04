@@ -17,10 +17,10 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		public ActionResult Index()
 		{
 			var sessions = _gameManager.GetAllGameSessionsForCurrentUser();
-			var history = new List<GameSession>();
+			var history = new List<GameSessionModel>();
 			foreach (var session in sessions)
 			{
-				var gameHistory = new GameSession(session);
+				var gameHistory = new GameSessionModel(session);
 				history.Add(gameHistory);
 			}
 			return View(history);

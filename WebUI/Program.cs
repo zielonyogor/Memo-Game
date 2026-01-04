@@ -26,7 +26,7 @@ namespace NR155910155992.WebUI
 			});
 
 			builder.Services.AddSingleton<LibraryLoader>();
-			builder.Services.AddScoped<IGameManager>(provider =>
+			builder.Services.AddSingleton<IGameManager>(provider => // TODO: Maybe it should not be singleton later
 			{
 				var config = provider.GetRequiredService<IConfiguration>();
 				var loader = provider.GetRequiredService<LibraryLoader>();

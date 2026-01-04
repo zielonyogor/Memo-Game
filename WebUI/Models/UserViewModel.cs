@@ -9,6 +9,7 @@ namespace NR155910155992.MemoGame.WebUI.Models
 
 		[Required]
 		[MaxLength(50)]
+		[Display(Name = "Your username")]
 		public string UserName { get; set; } = string.Empty;
 
 		public UserViewModel(IUserProfile userProfile)

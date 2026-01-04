@@ -1,6 +1,7 @@
 ﻿using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.BL
 {
@@ -22,6 +23,7 @@ namespace NR155910155992.MemoGame.BL
 
 		public GameManager(IConfiguration configuration)
 		{
+			Debug.WriteLine("Initializing GameManager...");
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 

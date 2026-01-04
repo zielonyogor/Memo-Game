@@ -21,10 +21,10 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		public ActionResult Index()
 		{
 			var cards = _gameManager.GetAllCards();
-			var cardList = new List<CardItem>();
+			var cardList = new List<CardItemModel>();
 			foreach (var card in cards)
 			{
-				cardList.Add(new CardItem(card));
+				cardList.Add(new CardItemModel(card));
 			}
 			return View(cardList);
 		}
@@ -36,7 +36,7 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		// POST: CardItems/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Name,ImagePath")] CardItem cardItem) // TODO: not working, should we store image the same as WPF app (copy to local)?
+		public async Task<IActionResult> Create([Bind("Name,ImagePath")] CardItemModel cardItem) // TODO: not working, should we store image the same as WPF app (copy to local)?
 		{
 			Console.WriteLine($"Creating card: {cardItem.Name}, {cardItem.ImagePath}");
 			if (ModelState.IsValid)
@@ -55,7 +55,7 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			{
 				return NotFound();
 			}
-			var cardItem = new CardItem(card);
+			var cardItem = new CardItemModel(card);
 			return View(cardItem);
 		}
 
