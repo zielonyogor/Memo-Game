@@ -8,6 +8,7 @@ namespace NR155910155992.MemoGame.BL
 	internal class GameSessionManager
 	{
 		private readonly IDataAccessObject _dao;
+        private readonly IGameStateStore _gameStateStore;
 		private System.Timers.Timer _timer;
 
 		// Game State
@@ -19,27 +20,28 @@ namespace NR155910155992.MemoGame.BL
 		// Match Logic State
 		private int _matchedPairsCount = 0;
 		private int _totalPairs;
-		private int? _firstRevealedCardId = null;
-		private bool _isProcessingMismatch = false; // probably should move this logic to UI layer
 
-		// Events
-		public event EventHandler<TimeSpan>? TimeUpdated;
-		public event EventHandler<int>? CardMatched;
-		public event EventHandler? CardMismatched;
-		public event EventHandler? GameFinished;
+		public event EventHandler GameFinished;
 
-		public bool IsProcessingMismatch => _isProcessingMismatch;
-
-		public GameSessionManager(IDataAccessObject dao)
+		public GameSessionManager(IDataAccessObject dao, IGameStateStore gameStateStore)
 		{
 			_dao = dao;
+            _gameStateStore = gameStateStore;
 			_timer = new System.Timers.Timer(1000);
 			_timer.Elapsed += TimerElapsed;
 			_timer.AutoReset = true;
+            
+            RestoreSession();
 		}
 
 		public void StartNewSession(GameMode mode, GameType type, int totalPairs)
 		{
+			var state = _gameStateStore.LoadState();
+			state.GameMode = mode;
+			state.GameType = type;
+			state.TotalPairs = totalPairs;
+			state.StartTime = DateTime.Now;
+
 			_gameMode = mode;
 			_gameType = type;
 			_totalPairs = totalPairs;
@@ -48,71 +50,153 @@ namespace NR155910155992.MemoGame.BL
 			// Reset State
 			TimeElapsed = TimeSpan.Zero;
 			_matchedPairsCount = 0;
-			_firstRevealedCardId = null;
-			_isProcessingMismatch = false;
-
 			_timer.Start();
+            
+			SaveState(state);
 		}
 
-		public async Task<ClickResult> ProcessCardClick(int clickedCardId)
-		{
-			if (_isProcessingMismatch)
-				return ClickResult.Ignore;
+        public void RestoreSession()
+        {
+            var state = _gameStateStore.LoadState();
+            if (state.IsGameActive)
+            {
+                _gameMode = state.GameMode;
+                _gameType = state.GameType;
+                _totalPairs = state.TotalPairs;
+                _date = state.StartTime;
+                
+                // Catch up time
+                TimeElapsed = state.TimeElapsed + (DateTime.Now - state.LastUpdatedTime);
+                
+                _matchedPairsCount = state.MatchedPairsCount;
+                if (!_timer.Enabled)
+                {
+                    _timer.Start();
+                }
+            }
+        }
 
-			if (_firstRevealedCardId == null)
+		private void SaveState(GameState state)
+		{
+			state.GameMode = _gameMode;
+			state.GameType = _gameType;
+			state.TotalPairs = _totalPairs;
+			state.StartTime = _date;
+			state.TimeElapsed = TimeElapsed;
+			state.LastUpdatedTime = DateTime.Now;
+			state.MatchedPairsCount = _matchedPairsCount;
+			state.IsGameActive = true;
+
+			_gameStateStore.SaveState(state);
+		}
+
+		public BoardState ProcessCardClick(int row, int col)
+		{
+			var state = _gameStateStore.LoadState();
+			var boardState = state.BoardState;
+
+			var clickedCard = boardState.Fields[row, col];
+
+			Debug.WriteLine($"Board state before anyhting:");
+			for (int r = 0; r < boardState.Rows; r++)
 			{
-				_firstRevealedCardId = clickedCardId;
-				return ClickResult.FirstCard;
+				for (int c = 0; c < boardState.Cols; c++)
+				{
+					var fieldState = boardState.Fields[r, c];
+					Debug.WriteLine($"  Field {r},{c}: CardId={fieldState.CardId}, State={fieldState.State}");
+				}
 			}
 
-			if (_firstRevealedCardId == clickedCardId)
+			if (clickedCard.State == ClickResult.Match || clickedCard.State == ClickResult.Null)
+			{
+				Debug.WriteLine($"Clicked on sth wrong: {clickedCard.CardId}");
+				return boardState; // Ignore clicks on matched or already revealed cards
+			}
+
+			// if there is first card ClickResult.FirstCard revealed
+			var alreadyChosenCardId = boardState.Fields.Cast<BoardState.FieldState>()
+				.FirstOrDefault(f => f.State == ClickResult.FirstCard)?.CardId;
+
+			if (alreadyChosenCardId == null)
+			{
+				Debug.WriteLine($"First card chosen: {clickedCard.CardId}");
+				boardState.Fields[row, col].State = ClickResult.FirstCard;
+				SaveState(state);
+				return boardState;
+			}
+
+			if (alreadyChosenCardId == clickedCard.CardId)
 			{
 				// MATCH
 				_matchedPairsCount++;
-				CardMatched?.Invoke(this, clickedCardId);
-				Debug.WriteLine($"Matched: {clickedCardId}");
-
-				_firstRevealedCardId = null;
-
+				boardState.Fields[row, col].State = ClickResult.Match;
+				// Find the first card and mark it as matched too
+				for (int r = 0; r < boardState.Rows; r++)
+				{
+					for (int c = 0; c < boardState.Cols; c++)
+					{
+						if (boardState.Fields[r, c].CardId == alreadyChosenCardId && boardState.Fields[r, c].State == ClickResult.FirstCard)
+						{
+							boardState.Fields[r, c].State = ClickResult.Match;
+						}
+					}
+				}
+				Debug.WriteLine($"Matched: {clickedCard.CardId}");
 				if (_matchedPairsCount >= _totalPairs)
 				{
 					_timer.Stop();
-					GameFinished?.Invoke(this, EventArgs.Empty);
+					state.IsGameActive = false;
+					state.BoardState.IsFinished = true;
+					_gameStateStore.SaveState(state);
+					//GameFinished?.Invoke(this, EventArgs.Empty);
 				}
-				return ClickResult.Match;
+				else
+				{
+					SaveState(state);
+				}
+				return boardState;
 			}
 			else
 			{
 				// MISMATCH
-				_isProcessingMismatch = true;
-				Debug.WriteLine($"No match: {_firstRevealedCardId} vs {clickedCardId}");
-
-				// REMOVED: await Task.Delay(1000);
-				
-				return ClickResult.Mismatch;
+				Debug.WriteLine($"No match: {alreadyChosenCardId} vs {clickedCard.CardId}");
+				boardState.Fields[row, col].State = ClickResult.Hidden;
+				// Find the first card and hide it again
+				for (int r = 0; r < boardState.Rows; r++)
+				{
+					for (int c = 0; c < boardState.Cols; c++)
+					{
+						if (boardState.Fields[r, c].CardId == alreadyChosenCardId && boardState.Fields[r, c].State == ClickResult.FirstCard)
+						{
+							boardState.Fields[r, c].State = ClickResult.Hidden;
+						}
+					}
+				}
+				SaveState(state);
+				return boardState;
 			}
 		}
 
-		public void ResolveMismatch()
-		{
-			if (_isProcessingMismatch)
-			{
-				CardMismatched?.Invoke(this, EventArgs.Empty);
-				_isProcessingMismatch = false;
-				_firstRevealedCardId = null;
-			}
-		}
 
 		public void SaveSession(IEnumerable<IUserProfile> users)
 		{
 			_timer.Stop();
+            
+            var state = _gameStateStore.LoadState();
+            state.IsGameActive = false;
+            _gameStateStore.SaveState(state);
+            
 			_dao.CreateGameSession(_date, TimeElapsed, _gameType, _gameMode, users: users, _totalPairs * 2);
 		}
 
 		private void TimerElapsed(object? sender, ElapsedEventArgs e)
 		{
 			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
-			TimeUpdated?.Invoke(this, TimeElapsed);
+            var state = _gameStateStore.LoadState();
+            state.TimeElapsed = TimeElapsed;
+            _gameStateStore.SaveState(state);
+            
+			//TimeUpdated?.Invoke(this, TimeElapsed);
 		}
 
 		public void Dispose()

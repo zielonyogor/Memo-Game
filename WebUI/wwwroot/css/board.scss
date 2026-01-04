@@ -6,7 +6,8 @@
 }
 
 .card-scene {
-    aspect-ratio: 3/4;
+    max-width: 240px;
+    aspect-ratio: 1/1;
     cursor: pointer;
     perspective: 1000px;
 }

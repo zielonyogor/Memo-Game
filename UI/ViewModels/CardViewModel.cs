@@ -33,46 +33,45 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ICommand ClickCommand { get; }
 
-		public CardViewModel(ICard card, IGameManager gameManager)
+		private Action<int, int> _onCardClicked;
+
+		// TODO: should it be public for game view to identify position later?
+		public readonly int row;
+		public readonly int column;
+
+		public CardViewModel(ICard card, IGameManager gameManager, int row, int column, Action<int, int> onCardClicked)
 		{
 			_card = card;
+			_gameManager = gameManager;
+			
+			this.row = row;
+			this.column = column;
+
+			_onCardClicked = onCardClicked;
+
 			Debug.WriteLine($"Got card: {card.ImagePath} {card.Id}");
 			_isRevealed = false;
 			_isMatched = false;
 
 			ClickCommand = new RelayCommand((_) => OnClick());
-
-			_gameManager = gameManager;
-
-			_gameManager.CardsMatched += (s, matchedCardId) =>
-			{
-				if (matchedCardId == Id)
-				{
-					IsMatched = true;
-				}
-			};
-			_gameManager.CardsMismatched += (s, e) =>
-			{
-				if (!IsMatched)
-				{
-					IsRevealed = false;
-				}
-			};
-
         }
 
-		private async void OnClick()
+		private void OnClick()
 		{
-            if (IsRevealed || IsMatched || _gameManager.IsShowingChoosenCards)
+            if (IsRevealed || IsMatched)
 				return;
             IsRevealed = true;
-            var result = await _gameManager.OnCardClicked(Id);
+			_onCardClicked.Invoke(row, column);
+		}
 
-			if (result == Core.ClickResult.Mismatch)
-			{
-				await Task.Delay(1000);
-				_gameManager.ResolveMismatch();
-			}
+		// card new if it was revealed before, wait one sec before hiding
+		public async Task Hide()
+		{
+			if (!IsRevealed)
+				return;
+
+			await Task.Delay(1000);
+			IsRevealed = false;
 		}
 	}
 }

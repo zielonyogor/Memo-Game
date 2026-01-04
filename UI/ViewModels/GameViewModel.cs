@@ -1,8 +1,10 @@
-﻿using NR155910155992.MemoGame.Interfaces;
+﻿using NR155910155992.MemoGame.Core;
+using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.Commands;
 using NR155910155992.MemoGame.UI.Models;
 using NR155910155992.MemoGame.UI.Services;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,7 +26,10 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private readonly GameSettings _gameSettings;
 
-        public GameViewModel(
+		public int Rows => _gameSettings.Rows;
+		public int Columns => _gameSettings.Columns;
+
+		public GameViewModel(
 			GameSettings gameSettings,
 			IGameManager gameManager, 
 			INavigationService menuNavigationService, 
@@ -39,23 +44,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			BackToMenu = new RelayCommand((_) => Back());
 
 			SetupCards();
-			_gameManager.StartNewGame(Core.GameMode.Pairs, Core.GameType.Solo);
-			_gameManager.GameFinished += (_, __) =>
-			{
-				_gameFinishedNavigationService.Navigate(
-					new GameResult(
-						_gameSettings.Rows * _gameSettings.Columns / 2,
-						timeElapsed));
-			};
-
-			_gameManager.TimeUpdated += (s, timeElapsed) =>
-            {
-                this.timeElapsed = timeElapsed;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    OnPropertyChanged(nameof(ElapsedTimeString)); 
-                });
-            };
+			_gameManager.StartNewGame(GameMode.Pairs, GameType.Solo);
 		}
 
         private void SetupCards()
@@ -68,12 +57,51 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 					ICard card = cards[r,c];
                     if ( card != null)
 					{
-						var cardViewModel = new CardViewModel(card, _gameManager);
+						var cardViewModel = new CardViewModel(card, _gameManager, r, c, OnCardClicked);
 						Cards.Add(cardViewModel);
 
 					}
 				}
 			}
+		}
+
+		private void OnCardClicked(int row, int col)
+		{
+			Debug.WriteLine($"Card clicked at {row}, {col}");
+			var boardStateNow = _gameManager.OnCardClicked(row, col);
+
+			// update looks
+			for (int r = 0; r < _gameSettings.Rows; r++)
+			{
+				for (int c = 0; c < _gameSettings.Columns; c++)
+				{
+					var fieldState = boardStateNow.Fields[r, c];
+					var cardViewModel = Cards[r * _gameSettings.Columns + c];
+					if (fieldState.State == ClickResult.Match)
+					{
+						cardViewModel.IsMatched = true;
+					}
+					else if (fieldState.State == ClickResult.FirstCard)
+					{
+						cardViewModel.IsRevealed = true;
+					}
+					else if (fieldState.State == ClickResult.Hidden)
+					{
+						_ = cardViewModel.Hide(); // later disable whole input on every card while this is happening;
+					}
+				}
+			}
+
+
+			// Check for game finished
+			if (boardStateNow.IsFinished)
+			{
+				_gameFinishedNavigationService.Navigate(
+					new GameResult(
+						_gameSettings.Rows * _gameSettings.Columns / 2,
+						timeElapsed));
+			}
+
 		}
 
 		private void Back()

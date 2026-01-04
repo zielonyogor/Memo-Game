@@ -2,7 +2,8 @@ namespace NR155910155992.MemoGame.Core
 {
 	public enum ClickResult
 	{
-		Ignore,
+		Null,
+		Hidden,
 		FirstCard,
 		Match,
 		Mismatch

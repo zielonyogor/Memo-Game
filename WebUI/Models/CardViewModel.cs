@@ -11,6 +11,9 @@ namespace NR155910155992.MemoGame.WebUI.Models
 		public bool IsRevealed { get; set; }
 		public bool IsMatched { get; set; }
 
+		public int Row { get; set; }
+		public int Col { get; set; }
+
 		public CardViewModel(ICard card)
 		{
 			Id = card.Id;

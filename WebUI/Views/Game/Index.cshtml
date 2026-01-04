@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = "Game";
-    int cols = (int?)TempData.Peek("Cols") ?? 4;
+    int cols = (int?)TempData.Peek("Cols") ?? 2;
+	int rows = (int?)TempData.Peek("Rows") ?? 2;
 }
 
 <div class="game-container">
@@ -11,28 +12,31 @@
         <a asp-controller="Game" asp-action="Setup" class="btn btn-outline-danger">Restart</a>
     </div>
 
-    <div class="game-board" style="grid-template-columns: repeat(@cols, 1fr);">
+    <div class="game-board" style="grid-template-columns: repeat(@cols, 1fr); grid-template-rows: repeat(@rows, 1fr);">
         @foreach (var card in Model)
         {
             bool isFaceUp = card.IsRevealed || card.IsMatched;
             string flippedClass = isFaceUp ? "is-flipped" : "";
 
-            string imgSource = isFaceUp ? card.ImagePath : "";
             string displayStyle = isFaceUp ? "display:block;" : "display:none;";
 
-            string clickAction = card.IsMatched ? "" : $"flipCard(this, {card.Id})";
+            string clickAction = card.IsMatched ? "" : $"flipCard(this, {card.Row}, {card.Col})";
             string cursorStyle = card.IsMatched ? "cursor: default;" : "cursor: pointer;";
 
-            <div class="card-scene" style="@cursorStyle" onclick="@clickAction">
+            string imgSource = "";
+            if (isFaceUp)
+            {
+               imgSource = Url.Action("GetImage", "CardItems", new { id = card.Id }) ?? "Assets/Cards/missing_image.png";
+            }
 
-                <div class="card-object @flippedClass" id="card-@card.Id">
+            <div class="card-scene" style="@cursorStyle" onclick="@clickAction">
+                <div class="card-object @flippedClass" id="card-@card.Row-@card.Col">
 
                     <div class="face front">
                         <img src="@Url.Content("~/Assets/Cards/card_backside.png")" alt="Back" />
                     </div>
-
                     <div class="face back">
-                        <img id="img-@card.Id"
+                        <img id="img-@card.Row-@card.Col"
                              src="@imgSource"
                              alt="Revealed"
                              style="@displayStyle" />

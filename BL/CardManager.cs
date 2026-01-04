@@ -16,6 +16,11 @@ namespace NR155910155992.MemoGame.BL
 			_dao = dao;
 		}
 
+		public ICard GetCardById(int cardId)
+		{
+			return _dao.GetAllCards().First(c => c.Id == cardId);
+		}
+
 		public IEnumerable<ICard> GetAllCards()
 		{
 			return _dao.GetAllCards();

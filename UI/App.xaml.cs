@@ -30,7 +30,7 @@ namespace NR155910155992.MemoGame.UI
 
 			IGameManager gameManager = libraryLoader.LoadObjectFromLibrary<IGameManager>(
 				LibraryKey.Bl,
-				new object[] { config }
+				new object[] { config, null }
 			);
 
 

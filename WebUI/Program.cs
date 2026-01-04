@@ -2,6 +2,7 @@ using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using JavaScriptEngineSwitcher.V8;
+using NR155910155992.WebUI.Services;
 
 namespace NR155910155992.WebUI
 {
@@ -13,6 +14,8 @@ namespace NR155910155992.WebUI
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSession();
 
 			builder.Services.AddJsEngineSwitcher(options =>
 			{
@@ -26,14 +29,16 @@ namespace NR155910155992.WebUI
 			});
 
 			builder.Services.AddSingleton<LibraryLoader>();
-			builder.Services.AddSingleton<IGameManager>(provider => // TODO: Maybe it should not be singleton later
+            builder.Services.AddScoped<IGameStateStore, SessionGameStateStore>();
+			builder.Services.AddScoped<IGameManager>(provider =>
 			{
 				var config = provider.GetRequiredService<IConfiguration>();
 				var loader = provider.GetRequiredService<LibraryLoader>();
+                var gameStateStore = provider.GetRequiredService<IGameStateStore>();
 
 				return loader.LoadObjectFromLibrary<IGameManager>(
 					LibraryKey.Bl,
-					new object[] { config }
+					new object[] { config, gameStateStore }
 				);
 			});
 
@@ -52,6 +57,7 @@ namespace NR155910155992.WebUI
 			app.UseHttpsRedirection();
 			app.UseRouting();
 
+            app.UseSession();
 			app.UseAuthorization();
 
 			app.MapStaticAssets();

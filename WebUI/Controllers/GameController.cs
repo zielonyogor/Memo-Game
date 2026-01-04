@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.WebUI.Models;
 
@@ -23,6 +24,8 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		[HttpPost]
 		public IActionResult Start(GameSettingModel model)
 		{
+			_gameManager.ResetGame();
+
 			TempData["Rows"] = model.Rows;
 			TempData["Cols"] = model.Columns;
 
@@ -46,7 +49,12 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 					var card = board[r, c];
 					if (card != null)
 					{
-						cardList.Add(new CardViewModel(card));
+						var cardViewModel = new CardViewModel(card)
+						{
+							Row = r,
+							Col = c
+						};
+						cardList.Add(cardViewModel);
 					}
 				}
 			}
@@ -56,36 +64,37 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Flip(int id)
+		public IActionResult Flip(int row, int col) // TODO: maybe model for response here?
 		{
-			var card = _gameManager.GetAllCards().FirstOrDefault(c => c.Id == id);
-			var result = await _gameManager.OnCardClicked(id);
+			BoardState state = _gameManager.OnCardClicked(row, col);
 
-			bool resetRequired = false;
-			if (result == Core.ClickResult.Mismatch)
+			var field = state.Fields[row, col];
+
+			var cardData = _gameManager.GetCardById(field.CardId);
+
+			string status;
+			if (field.State == ClickResult.Match)
 			{
-				resetRequired = true;
+				status = "match";
 			}
-			else if (result == Core.ClickResult.Match)
+			else if (field.State == ClickResult.FirstCard)
 			{
-				// Handle match
+				status = "wait";
 			}
+			else
+			{
+				status = "mismatch";
+			}
+
+			string imageUrl = Url.Action("GetImage", "CardItems", new { id = field.CardId }) ?? "Assets/Cards/missing_image.png";
 
 			return Json(new
 			{
 				success = true,
-				imageUrl = Url.Action("GetImage", "CardItems", new { id = card.Id }),
-				isMatch = result == Core.ClickResult.Match,
-				resetRequired = resetRequired,
-				isGameOver = false // You might want to check if game is finished
+				status = status,            // "wait", "match", or "mismatch"
+				imageUrl = imageUrl,
+				isFinished = state.IsFinished
 			});
-		}
-
-		[HttpPost]
-		public IActionResult ResolveMismatch()
-		{
-			_gameManager.ResolveMismatch();
-			return Ok();
 		}
 
 		// GET: Game/Result
