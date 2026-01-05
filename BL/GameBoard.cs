@@ -5,11 +5,15 @@ namespace NR155910155992.MemoGame.BL
 	internal class GameBoard
 	{
 		private readonly IDataAccessObject _dao;
-		public int TotalPairs { get; private set; } = 0;
 
 		public GameBoard(IDataAccessObject dao)
 		{
 			_dao = dao;
+		}
+
+		public int CalculatePairs(int rows, int cols)
+		{
+			return (rows * cols) / 2;
 		}
 
 		public IEnumerable<ICard> GetRandomSetOfCards(int numberOfCards)
@@ -30,10 +34,8 @@ namespace NR155910155992.MemoGame.BL
 		public ICard[,] GenerateBoard(int rows, int cols)
 		{
 			int uniqueCardsNeeded = (rows * cols) / 2; //making sure all pairs can fit, if odd one cell of grid will be empty
-			TotalPairs = uniqueCardsNeeded;
 
 			var cardSet = GetRandomSetOfCards(uniqueCardsNeeded).ToList();
-
 			var duplicatedCards = cardSet.Concat(cardSet).ToList();
 
 			Random rnd = new Random();

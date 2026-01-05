@@ -9,87 +9,38 @@ namespace NR155910155992.MemoGame.BL
 	{
 		private readonly IDataAccessObject _dao;
         private readonly IGameStateStore _gameStateStore;
-		private System.Timers.Timer _timer;
-
-		// Game State
-		public TimeSpan TimeElapsed { get; private set; }
-		private GameMode _gameMode;
-		private GameType _gameType;
-		private DateTime _date;
-
-		// Match Logic State
-		private int _matchedPairsCount = 0;
-		private int _totalPairs;
-
-		public event EventHandler<TimeSpan> TimeUpdated;
 
 		public GameSessionManager(IDataAccessObject dao, IGameStateStore gameStateStore)
 		{
 			_dao = dao;
             _gameStateStore = gameStateStore;
-			_timer = new System.Timers.Timer(1000);
-			_timer.Elapsed += TimerElapsed;
-			_timer.AutoReset = true;
-            
-            RestoreSession();
 		}
 
 		public void StartNewSession(GameMode mode, GameType type, int totalPairs)
 		{
 			var state = _gameStateStore.LoadState();
+
 			state.GameMode = mode;
 			state.GameType = type;
 			state.TotalPairs = totalPairs;
+
 			state.StartTime = DateTime.Now;
+			state.LastUpdatedTime = DateTime.Now;
+			state.TimeElapsed = TimeSpan.Zero;
 
-			_gameMode = mode;
-			_gameType = type;
-			_totalPairs = totalPairs;
-			_date = DateTime.Now;
+			state.IsGameActive = true;
+			state.MatchedPairsCount = 0;
 
-			// Reset State
-			TimeElapsed = TimeSpan.Zero;
-			_matchedPairsCount = 0;
-			_timer.Start();
-            
 			SaveState(state);
-		}
-
-        public void RestoreSession()
-        {
-            var state = _gameStateStore.LoadState();
-			_gameMode = state.GameMode;
-			_gameType = state.GameType;
-			_totalPairs = state.TotalPairs;
-			_date = state.StartTime;
-			_matchedPairsCount = state.MatchedPairsCount;
-
-			if (state.IsGameActive)
-			{
-				// if active catch up the time lost between requests
-				TimeElapsed = state.TimeElapsed + (DateTime.Now - state.LastUpdatedTime);
-				if (!_timer.Enabled)
-				{
-					_timer.Start();
-				}
-			}
-			else
-			{
-				TimeElapsed = state.TimeElapsed;
-			}
 		}
 
 		private void SaveState(GameState state)
 		{
-			state.GameMode = _gameMode;
-			state.GameType = _gameType;
-			state.TotalPairs = _totalPairs;
-			state.StartTime = _date;
-			state.TimeElapsed = TimeElapsed;
-			state.LastUpdatedTime = DateTime.Now;
-			state.MatchedPairsCount = _matchedPairsCount;
-			state.IsGameActive = true;
-
+			if (state.IsGameActive)
+			{
+				state.TimeElapsed += (DateTime.Now - state.LastUpdatedTime);
+				state.LastUpdatedTime = DateTime.Now;
+			}
 			_gameStateStore.SaveState(state);
 		}
 
@@ -113,14 +64,11 @@ namespace NR155910155992.MemoGame.BL
 			{
 				Debug.WriteLine($"First card chosen: {clickedCard.CardId}");
 				boardState.Fields[row, col].State = ClickResult.FirstCard;
-				SaveState(state);
-				return boardState;
 			}
-
-			if (alreadyChosenCardId == clickedCard.CardId)
+			else if (alreadyChosenCardId == clickedCard.CardId)
 			{
 				// MATCH
-				_matchedPairsCount++;
+				state.MatchedPairsCount++;
 				boardState.Fields[row, col].State = ClickResult.Match;
 				// Find the first card and mark it as matched too
 				for (int r = 0; r < boardState.Rows; r++)
@@ -134,20 +82,11 @@ namespace NR155910155992.MemoGame.BL
 					}
 				}
 				Debug.WriteLine($"Matched: {clickedCard.CardId}");
-				if (_matchedPairsCount >= _totalPairs)
+				if (state.MatchedPairsCount >= state.TotalPairs)
 				{
-					_timer.Stop();
-
 					state.IsGameActive = false;
 					state.BoardState.IsFinished = true;
-
-					_gameStateStore.SaveState(state);
 				}
-				else
-				{
-					SaveState(state);
-				}
-				return boardState;
 			}
 			else
 			{
@@ -165,36 +104,51 @@ namespace NR155910155992.MemoGame.BL
 						}
 					}
 				}
-				SaveState(state);
-				return boardState;
 			}
+			SaveState(state);
+			return boardState;
 		}
 
+		public void RestoreSession()
+		{
+			var state = _gameStateStore.LoadState();
+			state.IsGameActive = true;
+			state.LastUpdatedTime = DateTime.Now;
+			_gameStateStore.SaveState(state);
+		}
 
 		public void SaveSession(IEnumerable<IUserProfile> users)
 		{
-			_timer.Stop();
-            
-            var state = _gameStateStore.LoadState();
-            state.IsGameActive = false;
-            _gameStateStore.SaveState(state);
-            
-			_dao.CreateGameSession(_date, TimeElapsed, _gameType, _gameMode, users: users, _totalPairs * 2);
+			var state = _gameStateStore.LoadState();
+
+			state.IsGameActive = false;
+			state.TimeElapsed = GetCurrentDuration();
+			_gameStateStore.SaveState(state);
+
+			_dao.CreateGameSession(
+				state.StartTime,
+				state.TimeElapsed,
+				state.GameType,
+				state.GameMode,
+				users,
+				state.TotalPairs * 2
+			);
 		}
 
-        public GameResult GetGameResult()
-        {
-            return new GameResult(_matchedPairsCount, TimeElapsed);
-        }
-
-		private void TimerElapsed(object? sender, ElapsedEventArgs e)
+		public GameResult GetGameResult()
 		{
-			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
-            var state = _gameStateStore.LoadState();
-            state.TimeElapsed = TimeElapsed;
-            _gameStateStore.SaveState(state);
-            
-			TimeUpdated?.Invoke(this, TimeElapsed);
+			var state = _gameStateStore.LoadState();
+			return new GameResult(state.MatchedPairsCount, GetCurrentDuration());
+		}
+
+		public TimeSpan GetCurrentDuration()
+		{
+			var state = _gameStateStore.LoadState();
+
+			if (!state.IsGameActive)
+				return state.TimeElapsed;
+			return state.TimeElapsed + (DateTime.Now - state.LastUpdatedTime);
 		}
 	}
+	
 }

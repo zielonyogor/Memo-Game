@@ -8,14 +8,12 @@ namespace NR155910155992.MemoGame.BL
 	public class GameManager : IGameManager
 	{
 		private readonly IDataAccessObject _dao;
-		private readonly UserProfileController _userController;
+		private readonly UserProfileManager _userController;
 		private readonly GameBoard _gameBoard;
 		private readonly GameHistoryManager _historyManager;
 		private readonly GameSessionManager _sessionManager;
 		private readonly CardManager _cardManager;
         private readonly IGameStateStore _gameStateStore;
-
-        public event EventHandler<TimeSpan> TimeUpdated;
 
 		public GameManager(IConfiguration configuration, IGameStateStore? gameStateStore = null)
 		{
@@ -24,14 +22,12 @@ namespace NR155910155992.MemoGame.BL
 
             _gameStateStore = gameStateStore ?? new InMemoryGameStateStore();
 
-			_userController = new UserProfileController(_dao);
+			_userController = new UserProfileManager(_dao);
 			_gameBoard = new GameBoard(_dao);
 			_historyManager = new GameHistoryManager(_dao);
 			_sessionManager = new GameSessionManager(_dao, _gameStateStore);
 			_cardManager = new CardManager(_dao);
 
-            _sessionManager.TimeUpdated += (s, e) => TimeUpdated?.Invoke(this, e);
-            
             // Restore user profile
             var state = _gameStateStore.LoadState();
             if (state.CurrentUserProfileId.HasValue)
@@ -48,6 +44,8 @@ namespace NR155910155992.MemoGame.BL
 			var state = _gameStateStore.LoadState();
 			state.IsGameActive = false;
 			state.BoardState = new BoardState();
+			state.MatchedPairsCount = 0;
+			state.TimeElapsed = TimeSpan.Zero;
 			_gameStateStore.SaveState(state);
 		}
 
@@ -55,25 +53,15 @@ namespace NR155910155992.MemoGame.BL
 		{
             var state = _gameStateStore.LoadState();
 
-			// restore prev session if matching board exists
-			if (state.IsGameActive && state.BoardState.Rows == rows && state.BoardState.Cols == cols && state.BoardState.Fields != null)
-            {
-                var board = new ICard[rows, cols];
-                var allCards = _dao.GetAllCards().ToDictionary(c => c.Id);
-                for (int r = 0; r < rows; r++)
-                {
-                    for (int c = 0; c < cols; c++)
-                    {
-                        var field = state.BoardState.Fields[r, c];
-                        if (allCards.ContainsKey(field.CardId))
-                        {
-                            board[r, c] = allCards[field.CardId];
-                        }
-                    }
-                }
-                _sessionManager.RestoreSession();
-                return board;
-            }
+			if (state.IsGameActive &&
+				state.BoardState.Rows == rows &&
+				state.BoardState.Cols == cols &&
+				state.BoardState.Fields != null)
+			{
+				Debug.WriteLine("Restoring existing active board.");
+				_sessionManager.RestoreSession();
+				return ReconstructBoard(rows, cols, state);
+			}
 
 			var newBoard = _gameBoard.GenerateBoard(rows, cols);
 			// save new board state
@@ -98,15 +86,32 @@ namespace NR155910155992.MemoGame.BL
             return newBoard;
 		}
 
+		private ICard[,] ReconstructBoard(int rows, int cols, GameState state)
+		{
+			var board = new ICard[rows, cols];
+			var allCards = _cardManager.GetAllCards().ToDictionary(c => c.Id);
+
+			for (int r = 0; r < rows; r++)
+			{
+				for (int c = 0; c < cols; c++)
+				{
+					var id = state.BoardState.Fields[r, c].CardId;
+					if (allCards.ContainsKey(id))
+					{
+						board[r, c] = allCards[id];
+					}
+				}
+			}
+			return board;
+		}
+
 		public void StartNewGame(GameMode gameMode, GameType gameType)
 		{
-			int totalPairs = _gameBoard.TotalPairs;
             var state = _gameStateStore.LoadState();
-            
-			if(totalPairs == 0)
-				totalPairs = state.BoardState.Rows * state.BoardState.Cols / 2;
-			if (totalPairs == 0)
-				throw new InvalidOperationException("Board not generated yet.");
+			int totalPairs = _gameBoard.CalculatePairs(
+				 state.BoardState.Rows,
+				 state.BoardState.Cols
+			);
 
 			_sessionManager.StartNewSession(gameMode, gameType, totalPairs);
 		}
@@ -114,6 +119,7 @@ namespace NR155910155992.MemoGame.BL
 		public BoardState OnCardClicked(int row, int col)
 		{
 			var boardState = _sessionManager.ProcessCardClick(row, col);
+			// Save session if finished
 			if (boardState.IsFinished)
 			{
 				var currentUser = GetCurrentUserProfile();
@@ -154,7 +160,7 @@ namespace NR155910155992.MemoGame.BL
 		public void DeleteCard(int cardId) => _cardManager.DeleteCard(cardId);
 		public void UpdateCardName(int cardId, string newName) => _cardManager.UpdateCardName(cardId, newName);
 
-        public TimeSpan GetTimeElapsed() => _sessionManager.TimeElapsed;
+        public TimeSpan GetTimeElapsed() => _sessionManager.GetCurrentDuration();
 		public GameResult GetCurrentGameResult() => _sessionManager.GetGameResult();
 	}
 }

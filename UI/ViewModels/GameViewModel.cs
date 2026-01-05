@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
 {
@@ -15,6 +16,8 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		private readonly IGameManager _gameManager;
 		private readonly INavigationService _menuNavigationService; 
 		private readonly INavigationService _gameFinishedNavigationService;
+
+		private readonly DispatcherTimer _uiTimer;
 
 		public ObservableCollection<CardViewModel> Cards { get; set; }
 
@@ -52,13 +55,12 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 			_gameManager.ResetGame();
 			SetupCards();
-            _gameManager.TimeUpdated += OnTimeUpdated;
 			_gameManager.StartNewGame(GameMode.Pairs, GameType.Solo);
-		}
 
-        private void OnTimeUpdated(object? sender, TimeSpan e)
-        {
-			ElapsedTimeString = e.ToString(@"mm\:ss");
+			_uiTimer = new DispatcherTimer();
+			_uiTimer.Interval = TimeSpan.FromSeconds(1);
+			_uiTimer.Tick += (s, e) => UpdateTime();
+
 		}
 
         private void SetupCards()
@@ -106,20 +108,24 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				}
 			}
 
-
 			// Check for game finished
 			if (boardStateNow.IsFinished)
 			{
 				Debug.WriteLine("Game finished!");
-				_gameManager.TimeUpdated -= OnTimeUpdated;
+				_uiTimer.Stop();
 				_gameFinishedNavigationService.Navigate();
 			}
 
 		}
+		private void UpdateTime()
+		{
+			var duration = _gameManager.GetTimeElapsed();
+			ElapsedTimeString = duration.ToString(@"mm\:ss");
+		}
+
 
 		private void Back()
 		{
-            _gameManager.TimeUpdated -= OnTimeUpdated;
 			_menuNavigationService.Navigate();
 		}
 	}

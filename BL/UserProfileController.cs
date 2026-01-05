@@ -2,13 +2,13 @@
 
 namespace NR155910155992.MemoGame.BL
 {
-	internal class UserProfileController
+	internal class UserProfileManager
 	{
 		private IDataAccessObject _dao;
 
 		private IUserProfile? currentUserProfile;
 
-		public UserProfileController(IDataAccessObject dao) 
+		public UserProfileManager(IDataAccessObject dao) 
 		{
 			_dao = dao;
 			currentUserProfile = dao.GetFirstUserProfile();
