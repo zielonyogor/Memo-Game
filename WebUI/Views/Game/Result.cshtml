@@ -10,7 +10,7 @@
     <div class="card mx-auto mt-4" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">Stats</h5>
-            <p class="card-text">Time: <strong>@Model.TimeElapsed.ToString()</strong></p>
+            <p class="card-text">Time: <strong>@Model.TimeElapsed.ToString(@"mm\:ss")</strong></p>
             <p class="card-text">Pairs Found: <strong>@Model.PairsMatched</strong></p>
         </div>
     </div>

@@ -6,7 +6,7 @@ using NR155910155992.MemoGame.UI.Models;
 using NR155910155992.MemoGame.UI.Services;
 using NR155910155992.MemoGame.UI.Stores;
 using NR155910155992.MemoGame.UI.ViewModels;
-using System;
+using System.Diagnostics;
 using System.Windows;
 
 namespace NR155910155992.MemoGame.UI
@@ -43,18 +43,6 @@ namespace NR155910155992.MemoGame.UI
 
 			services.AddSingleton<MainViewModel>();
 
-			services.AddSingleton<Func<GameResult, GameFinishedViewModel>>(s =>
-				result => new GameFinishedViewModel(
-					result,
-					CreateGameFinishedBackToMenuService(s))
-			);
-
-			services.AddSingleton<IParameterNavigationService<GameResult>>(s =>
-				new ParameterModalNavigationService<GameResult, GameFinishedViewModel>(
-					s.GetRequiredService<ModalNavigationStore>(),
-					s.GetRequiredService<Func<GameResult, GameFinishedViewModel>>())
-			);
-
 			services.AddTransient<MenuViewModel>(CreateMenuViewModel);
 
 			services.AddTransient<GameSettingsViewModel>(s =>
@@ -68,12 +56,19 @@ namespace NR155910155992.MemoGame.UI
 				)
 			);
 
+			services.AddSingleton<GameFinishedViewModel>(s =>
+				new GameFinishedViewModel(
+					s.GetRequiredService<IGameManager>(),
+					CreateGameFinishedBackToMenuService(s)
+				)
+			);
+
 			services.AddSingleton<Func<GameSettings, GameViewModel>>(s =>
 				settings => new GameViewModel(
 					settings,
 					s.GetRequiredService<IGameManager>(),
 					CreateBackToMenuNavidationService(s),
-					s.GetRequiredService<IParameterNavigationService<GameResult>>()
+					CreateGameFinishedNavigationService(s)
 				)
 			);
 
@@ -146,6 +141,13 @@ namespace NR155910155992.MemoGame.UI
 			return new NavigationService<MenuViewModel>(
 				s.GetRequiredService<NavigationStore>(),
 				() => s.GetRequiredService<MenuViewModel>());
+		}
+
+		private ModalNavigationService<GameFinishedViewModel> CreateGameFinishedNavigationService(IServiceProvider s)
+		{
+			return new ModalNavigationService<GameFinishedViewModel>(
+				s.GetRequiredService<ModalNavigationStore>(),
+				() => s.GetRequiredService<GameFinishedViewModel>());
 		}
 	}
 }

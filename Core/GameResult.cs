@@ -1,5 +1,5 @@
 ﻿
-namespace NR155910155992.MemoGame.UI.Models
+namespace NR155910155992.MemoGame.Core
 {
 	public sealed class GameResult
 	{

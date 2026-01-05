@@ -9,7 +9,7 @@
 <div class="game-container">
     <div class="game-header">
         <h1>Current Game</h1>
-        <a asp-controller="Game" asp-action="Setup" class="btn btn-outline-danger">Restart</a>
+        <div id="timer" style="font-size: 1.5em; font-weight: bold;">00:00</div>
     </div>
 
     <div class="game-board" style="grid-template-columns: repeat(@cols, 1fr); grid-template-rows: repeat(@rows, 1fr);">

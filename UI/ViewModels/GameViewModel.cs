@@ -14,15 +14,22 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 	{
 		private readonly IGameManager _gameManager;
 		private readonly INavigationService _menuNavigationService; 
-		private readonly IParameterNavigationService<GameResult> _gameFinishedNavigationService;
+		private readonly INavigationService _gameFinishedNavigationService;
 
 		public ObservableCollection<CardViewModel> Cards { get; set; }
 
-        private TimeSpan timeElapsed;
-        public string ElapsedTimeString => timeElapsed.ToString(@"mm\:ss");
+		private string _elapsedTimeString = "00:00";
+		public string ElapsedTimeString 
+		{
+            get => _elapsedTimeString;
+            set
+            {
+                _elapsedTimeString = value;
+                OnPropertyChanged(nameof(ElapsedTimeString));
+            }
+        }
 
 		public ICommand BackToMenu { get; }
-		public Action GoBackToMainMenuAction;
 
 		private readonly GameSettings _gameSettings;
 
@@ -33,7 +40,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			GameSettings gameSettings,
 			IGameManager gameManager, 
 			INavigationService menuNavigationService, 
-			IParameterNavigationService<GameResult> gameFinishedNavigationService
+			INavigationService gameFinishedNavigationService
 		)
 		{
 			_gameSettings = gameSettings;
@@ -43,8 +50,15 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 			BackToMenu = new RelayCommand((_) => Back());
 
+			_gameManager.ResetGame();
 			SetupCards();
+            _gameManager.TimeUpdated += OnTimeUpdated;
 			_gameManager.StartNewGame(GameMode.Pairs, GameType.Solo);
+		}
+
+        private void OnTimeUpdated(object? sender, TimeSpan e)
+        {
+			ElapsedTimeString = e.ToString(@"mm\:ss");
 		}
 
         private void SetupCards()
@@ -96,16 +110,16 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			// Check for game finished
 			if (boardStateNow.IsFinished)
 			{
-				_gameFinishedNavigationService.Navigate(
-					new GameResult(
-						_gameSettings.Rows * _gameSettings.Columns / 2,
-						timeElapsed));
+				Debug.WriteLine("Game finished!");
+				_gameManager.TimeUpdated -= OnTimeUpdated;
+				_gameFinishedNavigationService.Navigate();
 			}
 
 		}
 
 		private void Back()
 		{
+            _gameManager.TimeUpdated -= OnTimeUpdated;
 			_menuNavigationService.Navigate();
 		}
 	}

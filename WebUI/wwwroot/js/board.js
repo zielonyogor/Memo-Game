@@ -1,4 +1,26 @@
 ﻿let isProcessing = false;
+let timerInterval;
+
+document.addEventListener("DOMContentLoaded", function() {
+    startTimer();
+});
+
+function startTimer() {
+    timerInterval = setInterval(async () => {
+        try {
+            const response = await fetch('/Game/GetTime');
+            if (response.ok) {
+                const data = await response.json();
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.innerText = data.time;
+                }
+            }
+        } catch (error) {
+            console.error("Timer error:", error);
+        }
+    }, 1000);
+}
 
 async function flipCard(element, row, col) {
     const cardObj = document.getElementById(`card-${row}-${col}`);
@@ -53,6 +75,7 @@ async function flipCard(element, row, col) {
         }
 
         if (data.isFinished) {
+            clearInterval(timerInterval);
             setTimeout(() => {
                 window.location.href = "/Game/Result";
             }, 500);

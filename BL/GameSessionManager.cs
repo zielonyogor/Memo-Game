@@ -21,7 +21,7 @@ namespace NR155910155992.MemoGame.BL
 		private int _matchedPairsCount = 0;
 		private int _totalPairs;
 
-		public event EventHandler GameFinished;
+		public event EventHandler<TimeSpan> TimeUpdated;
 
 		public GameSessionManager(IDataAccessObject dao, IGameStateStore gameStateStore)
 		{
@@ -58,23 +58,26 @@ namespace NR155910155992.MemoGame.BL
         public void RestoreSession()
         {
             var state = _gameStateStore.LoadState();
-            if (state.IsGameActive)
-            {
-                _gameMode = state.GameMode;
-                _gameType = state.GameType;
-                _totalPairs = state.TotalPairs;
-                _date = state.StartTime;
-                
-                // Catch up time
-                TimeElapsed = state.TimeElapsed + (DateTime.Now - state.LastUpdatedTime);
-                
-                _matchedPairsCount = state.MatchedPairsCount;
-                if (!_timer.Enabled)
-                {
-                    _timer.Start();
-                }
-            }
-        }
+			_gameMode = state.GameMode;
+			_gameType = state.GameType;
+			_totalPairs = state.TotalPairs;
+			_date = state.StartTime;
+			_matchedPairsCount = state.MatchedPairsCount;
+
+			if (state.IsGameActive)
+			{
+				// if active catch up the time lost between requests
+				TimeElapsed = state.TimeElapsed + (DateTime.Now - state.LastUpdatedTime);
+				if (!_timer.Enabled)
+				{
+					_timer.Start();
+				}
+			}
+			else
+			{
+				TimeElapsed = state.TimeElapsed;
+			}
+		}
 
 		private void SaveState(GameState state)
 		{
@@ -97,20 +100,9 @@ namespace NR155910155992.MemoGame.BL
 
 			var clickedCard = boardState.Fields[row, col];
 
-			Debug.WriteLine($"Board state before anyhting:");
-			for (int r = 0; r < boardState.Rows; r++)
-			{
-				for (int c = 0; c < boardState.Cols; c++)
-				{
-					var fieldState = boardState.Fields[r, c];
-					Debug.WriteLine($"  Field {r},{c}: CardId={fieldState.CardId}, State={fieldState.State}");
-				}
-			}
-
 			if (clickedCard.State == ClickResult.Match || clickedCard.State == ClickResult.Null)
 			{
-				Debug.WriteLine($"Clicked on sth wrong: {clickedCard.CardId}");
-				return boardState; // Ignore clicks on matched or already revealed cards
+				return boardState; // Ignore clicks on matched or already revealed cards, nearly impossible, jsut a sefeguard
 			}
 
 			// if there is first card ClickResult.FirstCard revealed
@@ -145,10 +137,11 @@ namespace NR155910155992.MemoGame.BL
 				if (_matchedPairsCount >= _totalPairs)
 				{
 					_timer.Stop();
+
 					state.IsGameActive = false;
 					state.BoardState.IsFinished = true;
+
 					_gameStateStore.SaveState(state);
-					//GameFinished?.Invoke(this, EventArgs.Empty);
 				}
 				else
 				{
@@ -189,6 +182,11 @@ namespace NR155910155992.MemoGame.BL
 			_dao.CreateGameSession(_date, TimeElapsed, _gameType, _gameMode, users: users, _totalPairs * 2);
 		}
 
+        public GameResult GetGameResult()
+        {
+            return new GameResult(_matchedPairsCount, TimeElapsed);
+        }
+
 		private void TimerElapsed(object? sender, ElapsedEventArgs e)
 		{
 			TimeElapsed = TimeElapsed.Add(TimeSpan.FromSeconds(1));
@@ -196,13 +194,7 @@ namespace NR155910155992.MemoGame.BL
             state.TimeElapsed = TimeElapsed;
             _gameStateStore.SaveState(state);
             
-			//TimeUpdated?.Invoke(this, TimeElapsed);
-		}
-
-		public void Dispose()
-		{
-			_timer.Stop();
-			_timer.Dispose();
+			TimeUpdated?.Invoke(this, TimeElapsed);
 		}
 	}
 }

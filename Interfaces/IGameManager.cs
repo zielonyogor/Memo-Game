@@ -24,5 +24,9 @@ namespace NR155910155992.MemoGame.Interfaces
         public ICard CreateNewCard(string imagePath, string name);
         public void DeleteCard(int cardId);
         public void UpdateCardName(int cardId, string newName);
+
+        public event EventHandler<TimeSpan> TimeUpdated;
+        public TimeSpan GetTimeElapsed();
+        public GameResult GetCurrentGameResult();
 	}
 }

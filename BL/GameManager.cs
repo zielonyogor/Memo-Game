@@ -15,9 +15,10 @@ namespace NR155910155992.MemoGame.BL
 		private readonly CardManager _cardManager;
         private readonly IGameStateStore _gameStateStore;
 
+        public event EventHandler<TimeSpan> TimeUpdated;
+
 		public GameManager(IConfiguration configuration, IGameStateStore? gameStateStore = null)
 		{
-			Debug.WriteLine("Initializing GameManager...");
 			var loader = new LibraryLoader(configuration);
 			_dao = loader.LoadObjectFromLibrary<IDataAccessObject>(LibraryKey.Dao);
 
@@ -29,7 +30,7 @@ namespace NR155910155992.MemoGame.BL
 			_sessionManager = new GameSessionManager(_dao, _gameStateStore);
 			_cardManager = new CardManager(_dao);
 
-			_sessionManager.GameFinished += OnSessionFinished;
+            _sessionManager.TimeUpdated += (s, e) => TimeUpdated?.Invoke(this, e);
             
             // Restore user profile
             var state = _gameStateStore.LoadState();
@@ -112,14 +113,22 @@ namespace NR155910155992.MemoGame.BL
 
 		public BoardState OnCardClicked(int row, int col)
 		{
-			return _sessionManager.ProcessCardClick(row, col);
+			var boardState = _sessionManager.ProcessCardClick(row, col);
+			if (boardState.IsFinished)
+			{
+				var currentUser = GetCurrentUserProfile();
+
+				var users = new List<IUserProfile>();
+				if (currentUser != null)
+				{
+					users.Add(currentUser);
+				}
+				_sessionManager.SaveSession(users);
+			}
+
+			return boardState;
 		}
 
-		private void OnSessionFinished(object? sender, EventArgs e)
-		{
-			var users = _userController.GetCurrentlyPlayingUsers();
-			_sessionManager.SaveSession(users);
-		}
 
 		public int GetCardsCount() => _gameBoard.GetTotalCardsCount();
 		public IEnumerable<IGameSession> GetAllGameSessionsForCurrentUser() => _historyManager.GetAllGameSessionsForUser(_userController.GetCurrentUserProfile());
@@ -144,5 +153,8 @@ namespace NR155910155992.MemoGame.BL
 		public ICard CreateNewCard(string imagePath, string name) => _cardManager.CreateNewCard(imagePath, name);
 		public void DeleteCard(int cardId) => _cardManager.DeleteCard(cardId);
 		public void UpdateCardName(int cardId, string newName) => _cardManager.UpdateCardName(cardId, newName);
+
+        public TimeSpan GetTimeElapsed() => _sessionManager.TimeElapsed;
+		public GameResult GetCurrentGameResult() => _sessionManager.GetGameResult();
 	}
 }

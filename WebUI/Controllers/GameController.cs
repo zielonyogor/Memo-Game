@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NR155910155992.MemoGame.Core;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.WebUI.Models;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.WebUI.Controllers
 {
@@ -99,17 +100,25 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 
 		// GET: Game/Result
 		[HttpGet]
-		public IActionResult Result(double timeElapsed, int pairs)
+		public IActionResult Result()
 		{
-			var timeSpan = TimeSpan.FromSeconds(timeElapsed);
+            var result = _gameManager.GetCurrentGameResult();
+			Debug.WriteLine($"Got results: {result.ElapsedTime} and {result.TotalPairs}");
 
 			var model = new GameResultViewModel
 			{
-				TimeElapsed = timeSpan,
-				PairsMatched = pairs,
+				TimeElapsed = result.ElapsedTime,
+				PairsMatched = result.TotalPairs,
 			};
 
 			return View(model);
 		}
+
+        [HttpGet]
+        public IActionResult GetTime()
+        {
+            var time = _gameManager.GetTimeElapsed();
+            return Json(new { time = time.ToString(@"mm\:ss") });
+        }
 	}
 }
