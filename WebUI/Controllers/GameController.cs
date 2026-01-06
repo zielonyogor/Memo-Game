@@ -19,7 +19,14 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		[HttpGet]
 		public IActionResult Settings()
 		{
-			return View(new GameSettingModel());
+			var model = new GameSettingModel
+			{
+				Rows = 2,
+				Columns = 1,
+				TotalLibraryCards = _gameManager.GetCardsCount()
+			};
+
+			return View(model);
 		}
 
 		[HttpPost]

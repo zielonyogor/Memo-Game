@@ -12,7 +12,7 @@
          Background="White"
          CornerRadius="10"
          Width="350"
-         Height="250"
+         Height="300"
          BorderBrush="Black"
          BorderThickness="3">
         <StackPanel HorizontalAlignment="Center"
@@ -22,22 +22,41 @@
                     FontSize="32"
                     FontWeight="Bold"
                     HorizontalAlignment="Center"
-                    TextWrapping="Wrap"/>
+                    TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-            <TextBox Text="{Binding Rows, UpdateSourceTrigger=PropertyChanged}"
-                     VerticalAlignment="Center"
-                     Margin="10,10,10,10">
-            </TextBox>
+            <Grid HorizontalAlignment="Center" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <TextBox Text="{Binding Columns, UpdateSourceTrigger=PropertyChanged}"
-                     VerticalAlignment="Center"
-                     Margin="10,10,10,10">
-            </TextBox>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="Rows" Foreground="Gray" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding Rows, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource NumberInputStyle}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" Text="✕" 
+                           FontSize="16" Foreground="Gray" 
+                           VerticalAlignment="Bottom" HorizontalAlignment="Center" 
+                           Margin="0,0,0,12"/>
+
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="Cols" Foreground="Gray" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding Columns, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource NumberInputStyle}"/>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="{Binding LibraryStatus}"
+                       FontSize="13" Foreground="#666"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       Margin="0,0,0,15"/>
 
             <Button Content="Play!"
                  Command="{Binding PlayGame}"
                  Style="{StaticResource PrimaryButton}"/>
         </StackPanel>
-
     </Border>
 </UserControl>

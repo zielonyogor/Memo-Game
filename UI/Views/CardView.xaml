@@ -8,12 +8,24 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:CardViewModel}"
              d:DesignHeight="200" d:DesignWidth="200">
-    <Border BorderBrush="Black" BorderThickness="4" Margin="2" CornerRadius="5" Background="White">
-        <Grid>
-            <Button Command="{Binding ClickCommand}"
-                    IsEnabled="{Binding IsMatched, Converter={StaticResource InverseBoolConverter}}">
-                <Image Source="{Binding CurrentSideImage}" Stretch="UniformToFill" Margin="5"/>
-            </Button>
+    <Viewbox Stretch="Uniform">
+        <Grid Width="100" Height="100">
+            <Border BorderBrush="DarkMagenta" BorderThickness="2" CornerRadius="4"
+                    Background="White" Margin="4">
+                <Button Command="{Binding ClickCommand}"
+                        IsEnabled="{Binding IsMatched, Converter={StaticResource InverseBoolConverter}}"
+                        Background="Transparent" BorderThickness="0">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border CornerRadius="9" ClipToBounds="True">
+                                    <Image Source="{Binding CurrentSideImage}" Stretch="UniformToFill"/>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Border>
         </Grid>
-    </Border>
+    </Viewbox>
 </UserControl>

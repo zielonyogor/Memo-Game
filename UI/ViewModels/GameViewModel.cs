@@ -18,9 +18,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		private readonly INavigationService _gameFinishedNavigationService;
 
 		private readonly DispatcherTimer _uiTimer;
-
-		public ObservableCollection<CardViewModel> Cards { get; set; }
-
 		private string _elapsedTimeString = "00:00";
 		public string ElapsedTimeString 
 		{
@@ -34,10 +31,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		public ICommand BackToMenu { get; }
 
-		private readonly GameSettings _gameSettings;
+		public int Rows { get; }
+		public int Columns { get; }
 
-		public int Rows => _gameSettings.Rows;
-		public int Columns => _gameSettings.Columns;
+		public ObservableCollection<CardViewModel> Cards { get; set; }
+		private bool _isBusy = false;
 
 		public GameViewModel(
 			GameSettings gameSettings,
@@ -46,10 +44,12 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			INavigationService gameFinishedNavigationService
 		)
 		{
-			_gameSettings = gameSettings;
 			_gameManager = gameManager;
 			_menuNavigationService = menuNavigationService;
 			_gameFinishedNavigationService = gameFinishedNavigationService;
+			
+			Rows = gameSettings.Rows;
+			Columns = gameSettings.Columns;
 
 			BackToMenu = new RelayCommand((_) => Back());
 
@@ -65,15 +65,15 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
         private void SetupCards()
 		{
-            ICard [,] cards = _gameManager.GetRandomCardsPositionedOnBoard(_gameSettings.Rows, _gameSettings.Columns); 
+            ICard [,] cards = _gameManager.GetRandomCardsPositionedOnBoard(Rows, Columns); 
             Cards = new ObservableCollection<CardViewModel>(); 
-			for( int r = 0; r < _gameSettings.Rows; r++)
+			for( int r = 0; r < Rows; r++)
             {
-				for (int c = 0; c < _gameSettings.Columns; c++) {
+				for (int c = 0; c < Columns; c++) {
 					ICard card = cards[r,c];
                     if ( card != null)
 					{
-						var cardViewModel = new CardViewModel(card, _gameManager, r, c, OnCardClicked);
+						var cardViewModel = new CardViewModel(card, r, c, OnCardClicked, () => !_isBusy);
 						Cards.Add(cardViewModel);
 
 					}
@@ -81,37 +81,53 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			}
 		}
 
-		private void OnCardClicked(int row, int col)
+		private async void OnCardClicked(int row, int col)
 		{
+			if (_isBusy)
+				return;
+
 			Debug.WriteLine($"Card clicked at {row}, {col}");
 			var boardStateNow = _gameManager.OnCardClicked(row, col);
+			var cardsToHide = new List<CardViewModel>(); // mismatched cards to hide later
 
 			// update looks
-			for (int r = 0; r < _gameSettings.Rows; r++)
+			for (int r = 0; r < Rows; r++)
 			{
-				for (int c = 0; c < _gameSettings.Columns; c++)
+				for (int c = 0; c < Columns; c++)
 				{
 					var fieldState = boardStateNow.Fields[r, c];
-					var cardViewModel = Cards[r * _gameSettings.Columns + c];
+					var cardVM = Cards[r * Columns + c];
+
 					if (fieldState.State == ClickResult.Match)
 					{
-						cardViewModel.IsMatched = true;
+						cardVM.IsMatched = true;
 					}
 					else if (fieldState.State == ClickResult.FirstCard)
 					{
-						cardViewModel.IsRevealed = true;
+						cardVM.IsRevealed = true;
 					}
-					else if (fieldState.State == ClickResult.Hidden)
+					else if (fieldState.State == ClickResult.Hidden && cardVM.IsRevealed) // mismatched card to hide
 					{
-						_ = cardViewModel.Hide(); // later disable whole input on every card while this is happening;
+						cardsToHide.Add(cardVM);
 					}
 				}
+			}
+
+			if (cardsToHide.Count != 0)
+			{
+				_isBusy = true;
+				await Task.Delay(1000); // 1 sec
+
+				foreach (var card in cardsToHide)
+				{
+					card.IsRevealed = false;
+				}
+				_isBusy = false;
 			}
 
 			// Check for game finished
 			if (boardStateNow.IsFinished)
 			{
-				Debug.WriteLine("Game finished!");
 				_uiTimer.Stop();
 				_gameFinishedNavigationService.Navigate();
 			}

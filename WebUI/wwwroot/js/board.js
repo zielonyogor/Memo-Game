@@ -58,8 +58,7 @@ async function flipCard(element, row, col) {
             isProcessing = false;
         }
         else if (data.status === "mismatch") {
-            // MISMATCH: The server has already hidden them in the DB, 
-            // but we need to show the error to the user for 1 second.
+            // MISMATCH hide card for a 1 sec
 
             setTimeout(() => {
                 unflipCard(cardObj, imgObj);

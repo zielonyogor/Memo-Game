@@ -10,7 +10,6 @@ namespace NR155910155992.MemoGame.UI.ViewModels
     public class CardViewModel : ViewModelBase
     {
 		private readonly ICard _card;
-		private readonly IGameManager _gameManager;
 
 		private bool _isRevealed;
 		public bool IsRevealed
@@ -34,22 +33,24 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 		public ICommand ClickCommand { get; }
 
 		private Action<int, int> _onCardClicked;
+		private readonly Func<bool> _canClick;
 
 		// TODO: should it be public for game view to identify position later?
 		public readonly int row;
 		public readonly int column;
 
-		public CardViewModel(ICard card, IGameManager gameManager, int row, int column, Action<int, int> onCardClicked)
+		public CardViewModel(ICard card, int row, int column, 
+			Action<int, int> onCardClicked,
+			Func<bool> canClick)
 		{
 			_card = card;
-			_gameManager = gameManager;
-			
+			_canClick = canClick;
+
 			this.row = row;
 			this.column = column;
 
 			_onCardClicked = onCardClicked;
 
-			Debug.WriteLine($"Got card: {card.ImagePath} {card.Id}");
 			_isRevealed = false;
 			_isMatched = false;
 
@@ -58,20 +59,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void OnClick()
 		{
-            if (IsRevealed || IsMatched)
+			if (!_canClick())
 				return;
+
+			if (IsRevealed || IsMatched)
+				return;
+
             IsRevealed = true;
 			_onCardClicked.Invoke(row, column);
-		}
-
-		// card new if it was revealed before, wait one sec before hiding
-		public async Task Hide()
-		{
-			if (!IsRevealed)
-				return;
-
-			await Task.Delay(1000);
-			IsRevealed = false;
 		}
 	}
 }

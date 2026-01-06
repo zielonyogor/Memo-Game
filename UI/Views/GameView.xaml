@@ -20,12 +20,13 @@
         </HeaderedContentControl>
 
         <Grid Grid.Row="1">
-            <ItemsControl ItemsSource="{Binding Cards}" Margin="20">
+            <ItemsControl ItemsSource="{Binding Cards}" Margin="10">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:CardView />
@@ -33,7 +34,10 @@
                 </ItemsControl.ItemTemplate>
 
                 <ItemsControl.ItemContainerStyle>
-                    <Style BasedOn="{StaticResource CardContainer}" TargetType="ContentPresenter"/>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    </Style>
                 </ItemsControl.ItemContainerStyle>
             </ItemsControl>
         </Grid>

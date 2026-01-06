@@ -1,26 +1,59 @@
 ﻿@model NR155910155992.MemoGame.WebUI.Models.GameSettingModel
 
 @{
-    ViewData["Title"] = "GameSetting";
+    ViewData["Title"] = "Start New Game";
+    int maxPairs = Model.TotalLibraryCards;
 }
 
-<div class="container text-center mt-5">
-    <h1>Start New Game</h1>
-    <form asp-action="Start" method="post" class="mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-3">
-                <label>Rows</label>
-                <input asp-for="Rows" class="form-control" type="number" min="2" max="6" />
-            </div>
-            <div class="col-md-3">
-                <label>Columns</label>
-                <input asp-for="Columns" class="form-control" type="number" min="2" max="6" />
-            </div>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+
+    <div class="card lg p-4" style="max-width: 450px; width: 100%; border-radius: 15px;">
+        <div class="card-body text-center">
+
+            <h2 class="card-title mb-4 fw-bold text-dark">Setup Game</h2>
+
+            <form asp-action="Start" method="post" id="setupForm">
+
+                <div class="d-flex align-items-center justify-content-center mb-3">
+
+                    <div class="me-2">
+                        <label asp-for="Rows" class="form-label text-muted small">Rows</label>
+                        <input asp-for="Rows" id="inputRows" class="form-control text-center fw-bold fs-5"
+                               type="number" min="1" max="10" style="width: 80px; height: 50px;" />
+                    </div>
+
+                    <div class="text-muted fw-bold fs-4 mx-2 mt-3">✕</div>
+
+                    <div class="ms-2">
+                        <label asp-for="Columns" class="form-label text-muted small">Cols</label>
+                        <input asp-for="Columns" id="inputCols" class="form-control text-center fw-bold fs-5"
+                               type="number" min="1" max="10" style="width: 80px; height: 50px;" />
+                    </div>
+                </div>
+
+                <div class="alert alert-light border-0" role="alert">
+                    <p class="mb-0 small text-muted">
+                        Library size: <strong>@Model.TotalLibraryCards</strong> images.
+                    </p>
+                    <p class="fw-bold mb-0" id="gridStatus">
+                    </p>
+                    <p class="text-danger small mt-2 d-none" id="errorMsg">
+                        Not enough cards in library!
+                    </p>
+                </div>
+
+                <button type="submit" id="btnStart" class="btn btn-primary btn-lg w-100 mt-2 fw-bold" style="border-radius: 8px;">
+                    Start Playing
+                </button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-success btn-lg mt-4">Start Playing</button>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script src="~/js/gameSettings.js" asp-append-version="true"></script>
 }

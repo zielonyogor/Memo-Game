@@ -9,8 +9,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
     public class GameSettingsViewModel : ViewModelBase
     {
         private readonly IGameManager _gameManager;
+		private readonly int totalCardCount;
+		private readonly int amountMatchingCards = 2; // this should be differently handled if there would be more game modes (triplets etc.)
 
-        private int _rows = 2;
+		public string LibraryStatus =>
+			$"Library size: {totalCardCount} images.\n" +
+			$"Current Grid: {_rows * _columns} cells ({_rows * _columns / 2} pairs).";
+
+		private int _rows = 2;
         public int Rows 
         { 
             get => _rows; 
@@ -18,8 +24,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             {
                 if (value * _columns / amountMatchingCards > totalCardCount)
                     return;
+
                 _rows = value;
-            } 
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(LibraryStatus));
+			} 
         }
 
         private int _columns = 1;
@@ -30,14 +39,14 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             {
 				if (value * _rows / amountMatchingCards > totalCardCount)
 					return;
+
                 _columns = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(LibraryStatus));
 			}
         }
 
         public ICommand PlayGame { get; }
-
-        private readonly int totalCardCount;
-        private readonly int amountMatchingCards = 2; // this should be differently handled if there would be more game modes (triplets etc.)
         public GameSettingsViewModel(IGameManager gameManager,
 	        IParameterNavigationService<GameSettings> navigateToGame,
             INavigationService closeModal)
