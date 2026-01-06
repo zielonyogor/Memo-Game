@@ -61,6 +61,13 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Delete()
 		{
+            // Prevent deleting the last remaining card
+            if (_gameManager.GetCardsCount() <= 1)
+            {
+                MessageBox.Show("Cannot delete the only card left.", "Delete Blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
 			var result = MessageBox.Show($"Are you sure you want to delete '{Card.Name}'?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 			if (result == MessageBoxResult.Yes)
 			{

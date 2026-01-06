@@ -21,6 +21,7 @@ namespace NR155910155992.MemoGame.Interfaces
 
 		public IEnumerable<ICard> GetAllCards();
 		public ICard CreateNewCard(string imagePath, string name);
+		public ICard CreateNewCard(Stream fileStream, string fileName, string name);
 		public void DeleteCard(int cardId);
 		public void UpdateCardName(int cardId, string newName);
 	}

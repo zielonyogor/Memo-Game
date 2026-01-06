@@ -12,7 +12,6 @@ namespace NR155910155992.MemoGame.WebUI.Models
 		[Display(Name = "Card's name")]
 		public string Name { get; set; }
 		
-		[Required]
 		[Display(Name = "Path to your image")]
 		public string ImagePath { get; set; }
 

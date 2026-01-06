@@ -9,8 +9,8 @@
     const maxUniqueCards = parseInt(form.dataset.maxCards) || 0;
 
     function updateStatus() {
-        const r = parseInt(rowsInput.value) || 0;
-        const c = parseInt(colsInput.value) || 0;
+        const r = parseInt(rowsInput.value) || 1;
+        const c = parseInt(colsInput.value) || 1;
         const totalCells = r * c;
         const pairsNeeded = Math.floor(totalCells / 2);
 
@@ -20,6 +20,11 @@
         if (pairsNeeded > maxUniqueCards) {
             isValid = false;
             errorMsg.innerText = `Need ${pairsNeeded} pairs, but library only has ${maxUniqueCards}!`;
+            errorMsg.classList.remove("d-none");
+        }
+        else if (pairsNeeded === 0) {
+            isValid = false;
+            errorMsg.innerText = `There must be at least one pair!`;
             errorMsg.classList.remove("d-none");
         }
         else {

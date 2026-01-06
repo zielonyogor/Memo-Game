@@ -155,6 +155,16 @@ namespace NR155910155992.MemoGame.Dao
 			return card;
 		}
 
+		public ICard CreateNewCard(Stream fileStream, string fileName, string name)
+		{
+			var srcPath = ImageUtility.SaveImage(fileStream, fileName, name);
+			var card = new Card { Name = name, ImagePath = srcPath };
+			_db.Cards.Add(card);
+			_db.SaveChanges();
+
+			return card;
+		}
+
 		public void UpdateCardName(int cardId, string newName)
 		{
 			var dbCard = _db.Cards.Find(cardId);

@@ -38,7 +38,7 @@
             <Button Content="Start game" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding StartGameCommand}"/>
-            <Button Content="Change User" 
+            <Button Content="Users" 
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ShowUserSelection}"/>
             <Button Content="Cards" 

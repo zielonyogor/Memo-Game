@@ -22,7 +22,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             get => _rows; 
             set
             {
-                if (value * _columns / amountMatchingCards > totalCardCount)
+                if (value * _columns / amountMatchingCards > totalCardCount || value * _columns < amountMatchingCards)
                     return;
 
                 _rows = value;
@@ -37,7 +37,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
             get => _columns;
             set
             {
-				if (value * _rows / amountMatchingCards > totalCardCount)
+				if (value * _rows / amountMatchingCards > totalCardCount || value * _rows < amountMatchingCards)
 					return;
 
                 _columns = value;

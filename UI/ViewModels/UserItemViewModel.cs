@@ -1,6 +1,7 @@
 ﻿using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.UI.Commands;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 
 namespace NR155910155992.MemoGame.UI.ViewModels
@@ -69,6 +70,11 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Delete()
 		{
+			if (_gameManager.GetUsersCount() <= 1)
+			{
+				MessageBox.Show("Cannot delete the only user left.", "Delete Blocked", MessageBoxButton.OK, MessageBoxImage.Warning);
+				return;
+			}
 			_gameManager.DeleteUserProfile(User.Id);
 			_parent.RemoveUser(this);
 		}

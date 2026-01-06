@@ -12,7 +12,7 @@
 
             <h2 class="card-title mb-4 fw-bold text-dark">Setup Game</h2>
 
-            <form asp-action="Start" method="post" id="setupForm">
+            <form asp-action="Start" method="post" id="setupForm" data-max-cards="@Model.TotalLibraryCards">
 
                 <div class="d-flex align-items-center justify-content-center mb-3">
 

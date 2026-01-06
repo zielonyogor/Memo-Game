@@ -29,6 +29,11 @@ namespace NR155910155992.MemoGame.BL
 		public ICard CreateNewCard(string imagePath, string name)
 		{
 			return _dao.CreateNewCard(imagePath, name);
+		
+		}
+		public ICard CreateNewCard(Stream fileStream, string fileName, string name)
+		{
+			return _dao.CreateNewCard(fileStream, fileName, name);
 		}
 
 		public void DeleteCard(int cardId)

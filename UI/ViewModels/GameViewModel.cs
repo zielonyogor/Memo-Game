@@ -60,7 +60,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			_uiTimer = new DispatcherTimer();
 			_uiTimer.Interval = TimeSpan.FromSeconds(1);
 			_uiTimer.Tick += (s, e) => UpdateTime();
-
+			_uiTimer.Start();
 		}
 
         private void SetupCards()
@@ -142,6 +142,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Back()
 		{
+			_uiTimer.Stop()
 			_menuNavigationService.Navigate();
 		}
 	}

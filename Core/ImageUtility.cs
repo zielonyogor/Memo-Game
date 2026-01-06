@@ -7,20 +7,6 @@ namespace NR155910155992.MemoGame.Core
 		private readonly static string _imagesFolder = Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGame/Images");
 
-		public static string SaveImage(byte[] imageData, string imageName)
-		{
-			if(imageData == null || imageData.Length == 0)
-				throw new ArgumentException("Image data cannot be null or empty.", nameof(imageData));
-
-			if(!Directory.Exists(_imagesFolder))
-				Directory.CreateDirectory(_imagesFolder);
-
-			string imageExt = Path.GetExtension(imageName);
-			string imagePath = Path.Combine(_imagesFolder, imageName + Guid.NewGuid().ToString() + imageExt);
-			File.WriteAllBytes(imagePath, imageData);
-			return imagePath;
-		}
-
 		public static string SaveImage(string imagePath, string imageName)
 		{
 			if(!File.Exists(imagePath))
@@ -29,9 +15,25 @@ namespace NR155910155992.MemoGame.Core
 				Directory.CreateDirectory(_imagesFolder);
 
 			string imageExt = Path.GetExtension(imageName);
-			string destPath = Path.Combine(_imagesFolder, imageName + Guid.NewGuid().ToString() + imageExt);
+			string destPath = Path.Combine(_imagesFolder, Guid.NewGuid().ToString() + imageExt);
 			File.Copy(imagePath, destPath, true);
 			return destPath;
+		}
+		public static string SaveImage(Stream sourceStream, string originalFileName, string name)
+		{
+			string extension = Path.GetExtension(originalFileName);
+			string destFileName = $"{Guid.NewGuid()}{extension}";
+
+			string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MemoGame", "Cards");
+			Directory.CreateDirectory(folder);
+			string destinationPath = Path.Combine(folder, destFileName);
+
+			using (var fileStream = new FileStream(destinationPath, FileMode.Create))
+			{
+				sourceStream.CopyTo(fileStream);
+			}
+
+			return destinationPath;
 		}
 
 		public static bool DeleteImage(string imageName)

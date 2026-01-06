@@ -101,6 +101,11 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Delete(int id)
 		{
+			if (_gameManager.GetUsersCount() <= 1)
+			{
+				TempData["Warning"] = "Cannot delete the only user left.";
+				return RedirectToAction(nameof(Index));
+			}
 			_gameManager.DeleteUserProfile(id);
 			return RedirectToAction(nameof(Index));
 		}

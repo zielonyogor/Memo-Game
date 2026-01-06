@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NR155910155992.MemoGame.Interfaces;
 using NR155910155992.MemoGame.WebUI.Models;
+using System.Diagnostics;
 
 namespace NR155910155992.MemoGame.WebUI.Controllers
 {
@@ -26,6 +27,7 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 			{
 				cardList.Add(new CardItemModel(card));
 			}
+            ViewBag.TotalCards = _gameManager.GetCardsCount();
 			return View(cardList);
 		}
 		public IActionResult Create()
@@ -36,15 +38,17 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		// POST: CardItems/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Create([Bind("Name,ImagePath")] CardItemModel cardItem) 
+		public IActionResult Create(CreateCardViewModel model)
 		{
-			Console.WriteLine($"Creating card: {cardItem.Name}, {cardItem.ImagePath}");
 			if (ModelState.IsValid)
 			{
-				_gameManager.CreateNewCard(cardItem.Name, cardItem.ImagePath);
+				using (var stream = model.ImageFile.OpenReadStream())
+				{
+					_gameManager.CreateNewCard(stream, model.ImageFile.FileName, model.Name);
+				}
 				return RedirectToAction(nameof(Index));
 			}
-			return View(cardItem);
+			return View(model);
 		}
 
 		// GET: CardItemsController/Edit/5
@@ -84,6 +88,11 @@ namespace NR155910155992.MemoGame.WebUI.Controllers
 		[ValidateAntiForgeryToken]
 		public ActionResult Delete(int id)
 		{
+            if (_gameManager.GetCardsCount() <= 1)
+            {
+                TempData["Warning"] = "Cannot delete the only card left.";
+                return RedirectToAction(nameof(Index));
+            }
 			try
 			{
 				_gameManager.DeleteCard(id);

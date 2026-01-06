@@ -84,6 +84,15 @@ namespace NR155910155992.MemoGame.JsonDao
 			return card;
 		}
 
+		public ICard CreateNewCard(Stream fileStream, string fileName, string name)
+		{
+			var path = ImageUtility.SaveImage(fileStream, fileName, name);
+			var card = new Card { Id = Guid.NewGuid().GetHashCode(), Name = name, ImagePath = path };
+			_cards.Add(card);
+			SaveToFile(_cardsPath, _cards);
+			return card;
+		}
+
 		public void DeleteCard(int cardId)
 		{
 			_cards.RemoveAll(c => c.Id == cardId);
