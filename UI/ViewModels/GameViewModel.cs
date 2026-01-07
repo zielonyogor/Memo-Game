@@ -44,6 +44,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 			INavigationService gameFinishedNavigationService
 		)
 		{
+			Debug.WriteLine("sperma");
 			_gameManager = gameManager;
 			_menuNavigationService = menuNavigationService;
 			_gameFinishedNavigationService = gameFinishedNavigationService;
@@ -97,6 +98,12 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 				{
 					var fieldState = boardStateNow.Fields[r, c];
 					var cardVM = Cards[r * Columns + c];
+
+					if (Cards.Count <= r * Columns + c) // safety check for when rows x cols is uneven
+					{
+						Debug.WriteLine("Skipping update for non-existing card VM");
+						continue;
+					}
 
 					if (fieldState.State == ClickResult.Match)
 					{
