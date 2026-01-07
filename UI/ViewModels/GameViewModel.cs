@@ -142,7 +142,7 @@ namespace NR155910155992.MemoGame.UI.ViewModels
 
 		private void Back()
 		{
-			_uiTimer.Stop()
+			_uiTimer.Stop();
 			_menuNavigationService.Navigate();
 		}
 	}
