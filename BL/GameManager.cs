@@ -51,17 +51,7 @@ namespace NR155910155992.MemoGame.BL
 
 		public ICard[,] GetRandomCardsPositionedOnBoard(int rows, int cols)
 		{
-            var state = _gameStateStore.LoadState();
-
-			if (state.IsGameActive &&
-				state.BoardState.Rows == rows &&
-				state.BoardState.Cols == cols &&
-				state.BoardState.Fields != null)
-			{
-				Debug.WriteLine("Restoring existing active board.");
-				_sessionManager.RestoreSession();
-				return ReconstructBoard(rows, cols, state);
-			}
+            var state = _gameStateStore.LoadState();	
 
 			var newBoard = _gameBoard.GenerateBoard(rows, cols);
 			// save new board state

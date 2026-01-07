@@ -58,7 +58,7 @@ async function flipCard(element, row, col) {
             isProcessing = false;
         }
         else if (data.status === "mismatch") {
-            // MISMATCH hide card for a 1 sec
+            // MISMATCH show card for a 1 sec
 
             setTimeout(() => {
                 unflipCard(cardObj, imgObj);
@@ -93,5 +93,5 @@ function unflipCard(cardNode, imgNode) {
             imgNode.src = "";
             imgNode.style.display = "none";
         }
-    }, 300);
+    }, 200);
 }
