@@ -5,9 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:NR155910155992.MemoGame.UI.Views"
              xmlns:vm="clr-namespace:NR155910155992.MemoGame.UI.ViewModels"
+             xmlns:conv="clr-namespace:NR155910155992.MemoGame.UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=vm:GameSettingsViewModel}">
+    <UserControl.Resources>
+        <conv:NullableIntConverter x:Key="NullableIntConverter" />
+    </UserControl.Resources>
     <Border Padding="30"
          Background="White"
          CornerRadius="10"
@@ -33,7 +37,7 @@
 
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                     <TextBlock Text="Rows" Foreground="Gray" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                    <TextBox Text="{Binding Rows, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding Rows, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{StaticResource NumberInputStyle}"/>
                 </StackPanel>
 
@@ -44,7 +48,7 @@
 
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                     <TextBlock Text="Cols" Foreground="Gray" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                    <TextBox Text="{Binding Columns, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Text="{Binding Columns, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullableIntConverter}}"
                              Style="{StaticResource NumberInputStyle}"/>
                 </StackPanel>
             </Grid>
@@ -56,6 +60,7 @@
 
             <Button Content="Play!"
                  Command="{Binding PlayGame}"
+                 IsEnabled="{Binding IsInputValid}"
                  Style="{StaticResource PrimaryButton}"/>
         </StackPanel>
     </Border>

@@ -12,6 +12,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border CornerRadius="6" 
+                        x:Name="border"
                         Background="#E5989B">
                         <ContentPresenter x:Name="contentPresenter" 
                                       ContentTemplate="{TemplateBinding ContentTemplate}" 
@@ -20,6 +21,14 @@
                                       Margin="{TemplateBinding Padding}" 
                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#E5E5E5"/>
+                            <Setter TargetName="contentPresenter" Property="Opacity" Value="0.6"/>
+                            <Setter Property="Foreground" Value="#9E9E9E"/>
+                            <Setter Property="Cursor" Value="No"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -37,6 +46,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border CornerRadius="10" 
+                    x:Name="border"
                     Background="#04A777">
                         <ContentPresenter x:Name="contentPresenter" 
                                   ContentTemplate="{TemplateBinding ContentTemplate}" 
@@ -45,6 +55,14 @@
                                   Margin="{TemplateBinding Padding}" 
                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#BBDDCB"/>
+                            <Setter TargetName="contentPresenter" Property="Opacity" Value="0.6"/>
+                            <Setter Property="Foreground" Value="#E0E0E0"/>
+                            <Setter Property="Cursor" Value="No"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -60,6 +78,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border CornerRadius="4" 
+                    x:Name="border"
                     Background="#820263">
                         <ContentPresenter x:Name="contentPresenter" 
                                   ContentTemplate="{TemplateBinding ContentTemplate}" 
@@ -68,6 +87,14 @@
                                   Margin="{TemplateBinding Padding}" 
                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#C9A3BE"/>
+                            <Setter TargetName="contentPresenter" Property="Opacity" Value="0.6"/>
+                            <Setter Property="Foreground" Value="#E0E0E0"/>
+                            <Setter Property="Cursor" Value="No"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
